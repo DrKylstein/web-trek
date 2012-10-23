@@ -23,6 +23,7 @@ menu,
 nav,
 section {
 	display: block;
+	overflow: hidden;
 }
 
 body {
@@ -53,18 +54,18 @@ td.adjacent-summary {
 }
 
 th {
-	text-align: left;
+	text-align: center;
 }
 td {
 	text-align: right;
 }
+th.column {
+	text-align: left;
+}
+table {
+	width: 100%;
+}
 
-#command {
-	float: right;
-}
-#astrometrics {
-	overflow: hidden;
-}
 
 .tabbed > ol {
 	overflow: hidden;
@@ -179,18 +180,14 @@ h1 {
 }
 
 
+#command {
+	float: right;
+}
+#astrometrics {
+	overflow: hidden;
+}
 #engines {
 	width: 1.5em;
-}
-
-th {
-	text-align: center;
-}
-th.column {
-	text-align: left;
-}
-table {
-	width: 100%;
 }
 
 #message-box {
@@ -203,4 +200,7 @@ table {
 }
 #message-box .active {
 	display: block;
+}
+#torpedo-count {
+	text-align: center;
 }

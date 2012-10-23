@@ -49,18 +49,29 @@
                 <tr><th>Energy</th><th>Shields</th><th>Phasers</th></tr>
             </table>
             <h1>Weapons</h1>
-            <table class="command" id="weapons">
-                <tr>
-                    <th>Phasers</th>
-                    <td id="phaser-count">0</td>
-                    <td><a class="button" id="fire-phasers" href="#">Fire</a></td>
-                </tr>
-                <tr>
-                    <th>Torpedos</th>
-                    <td id="torpedo-count">10</td>
-                    <td><a class="button" id="launch-torpedo" href="#">Launch</a></td>
-                </tr>
-            </table>
+            <section id="torpedos">
+                <table>
+                    <tr><th>Torpedos</th><th colspan="2">Vector</th></tr>
+                    <tr>
+                        <td rowspan="2" id="torpedo-count">0</td>
+                        <th>X</th>
+                        <td>
+                            <div id="torpedo-x" data-step=1 data-min=-1 data-max=1 data-value=0 class="spinbox"><div class="minus">-</div><div class="plus">+</div><div class="label"></div></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Y</th>
+                        <td>
+                            <div id="torpedo-y" data-step=1 data-min=-1 data-max=1 data-value=0 class="spinbox"><div class="minus">-</div><div class="plus">+</div><div class="label"></div></div>
+                        </td>
+                    </tr>
+                </table>
+                <a class="button" id="launch-torpedo" href="#">Launch</a>
+                <a class="button" id="reset-torpedo" href="#">Reset</a>
+            </section>
+            <section id="phasers">
+                <a class="button" id="fire-phasers" href="#">Fire Pasers</a>
+            </section>
             <h1>Helm</h1>
             <section id="helm">
                 <!-- Ahl, 1978: Warp up to 8.1, energy units 8 * warp factor, 1 warp = 1 quadrant 8x8 grids-->

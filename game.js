@@ -14,6 +14,10 @@ var random = {
     }
 }
 
+function distance(x1,y1, x2, y2) {
+    return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2))
+}
+
 function start() {
     var widgets = {}
     function energyLink(system, newvalue) {
@@ -316,11 +320,7 @@ function start() {
     widgets = initializeWidgets()
     //link energy-using subsystems to main reserve
     widgets["shields"].onchange = partial(energyLink, "shields")
-    widgets["phasers"].onchange = function(newvalue) {
-        newvalue = energyLink("phasers", newvalue)
-        $("#phaser-count").html(newvalue)
-        return newvalue
-    }
+    widgets["phasers"].onchange = partial(energyLink, "phasers")
     
         
     widgets["course-x"].onchange = function(newvalue) {
@@ -428,7 +428,7 @@ function start() {
         $("#time").html(time)
     }
         
-    $("#engage").click(function() {
+    function maneuver() {
         var newQuadrantPos = enterprise.toQuadrantPos(enterprise.x + widgets["course-x"].value(), enterprise.y + widgets["course-y"].value())        
         if(newQuadrantPos.x != enterprise.quadrantPos().x || newQuadrantPos.y != enterprise.quadrantPos().y) {
             enterprise.quadrant = galaxy.getQuadrant(newQuadrantPos.x, newQuadrantPos.y)
@@ -442,7 +442,36 @@ function start() {
         $("#position").html("("+ newQuadrantPos.x + "," + newQuadrantPos.y + ")")
         widgets["course-x"].setValue(0)
         widgets["course-y"].setValue(0)
-    })
+    }
+    
+    function firePhasers() {
+        if(!enterprise.quadrant.klingons) {
+            return
+        }
+        var perUnitDamage = widgets["phasers"].value()/enterprise.quadrant.klingons.length
+        var survivors = new Array()
+        for(var i in enterprise.quadrant.klingons) {
+            var damage = perUnitDamage / distance(enterprise.sectorPos().x, 
+                enterprise.sectorPos().y, enterprise.quadrant.klingons[i].x, 
+                enterprise.quadrant.klingons[i].y) * (Math.random()+2)
+            if(damage < 0.15) {
+                continue;
+            }
+            enterprise.quadrant.klingons[i].shields -= damage
+            if(enterprise.quadrant.klingons[i].shields <= 0) {
+                galaxy.klingons -=1
+                galaxy.quadrants[enterprise.quadrantPos().y][enterprise.quadrantPos().x].klingons -=1
+            } else {
+                survivors.push(enterprise.quadrant.klingons[i])
+            }
+        }
+        enterprise.quadrant.klingons = survivors
+        widgets["phasers"].setValue(0)
+        updateDisplays()
+    }
+    
+    $("#engage").click(maneuver)
+    $("#fire-phasers").click(firePhasers)
     $("#reset-course").click(function() {
         var released = (Math.abs(widgets["course-x"].value(0)) + Math.abs(widgets["course-y"].value(0))) * widgets["engines"].value()
         widgets["energy"].setValue(widgets["energy"].value() + released)
