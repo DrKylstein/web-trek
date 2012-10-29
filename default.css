@@ -51,6 +51,7 @@ td.adjacent-summary {
 }
 .grid {
 	border-collapse: collapse;
+	width: inherit;
 }
 
 th {
@@ -95,10 +96,6 @@ table {
 	display: block;
 }
 
-.grid {
-	float: right;
-	width: inherit;
-}
 .summary {
 	width: 5em;
 }

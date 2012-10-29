@@ -19,9 +19,13 @@
         <section id="command">
             <h1>Mission Status</h1>
             <table>
-                <tr><th class="column">Time</th><td id="time">0</td></tr>
-                <tr><th class="column">Klingons</th><td id="mission-klingons">0</td></tr>
-                <tr><th class="column">Position</th><td id="position">(0,0)</td></tr>
+                <tr><th class="column">Location</th><td colspan=2 id="quadrant-name">Subspace Anomaly</td></tr>
+                <tr><th class="column">Time</th><td id="time" colspan="2">0</td></tr>
+                <tr><th></th><th>Quadrant</th><th>Galaxy</th>
+                <tr><th class="column">Position</th><td id="sector">(0,0)</td><td id="quadrant">(0,0)</td></tr>
+                <tr><th class="column">Klingons</th><td id="quadrant-klingons">0</td><td id="total-klingons">0</td></tr>
+                <tr><th class="column">Starbases</th><td id="quadrant-bases">0</td><td id="total-bases">0</td></tr>
+                <!--tr><th class="column">Stars</th><td id="quadrant-stars">0</td><td id="total-stars">0</td></tr-->
             </table>
             <h1>Energy Flow</h1>
             <table>
@@ -60,7 +64,6 @@
             </section>
             <h1>Helm</h1>
             <section id="helm">
-                <!-- Ahl, 1978: Warp up to 8.1, energy units 8 * warp factor, 1 warp = 1 quadrant 8x8 grids-->
                 <table>
                     <tr><th>Warp</th><th>Vector</th></tr>
                     <tr>
@@ -104,12 +107,6 @@
                     <tr><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
                     <tr><td class="adjacent-summary" id="summary-southwest">000</td><td class="adjacent-summary" colspan="10" id="summary-south">000</td><td class="adjacent-summary" id="summary-southeast">000</td></tr>
                 </table>
-                <table class="summary">
-                    <tr><th colspan=2 id="quadrant-name">In this sector:</th></tr>
-                    <tr><th class="column">Klingons</th><td id="quadrant-klingons">0</td></tr>
-                    <tr><th class="column">Starbases</th><td id="quadrant-bases">0</td></tr>
-                    <tr><th class="column">Stars</th><td id="quadrant-stars">0</td></tr>
-                </table>
             </section>
             <section id="galaxy">
                 <table id="starchart" class="grid">
@@ -123,12 +120,6 @@
                     <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
                     <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
                     <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
-                </table>
-                <table class="summary">
-                    <tr><th colspan=2>Totals:</th></tr>
-                    <tr><th class="column">Klingons</th><td id="total-klingons">0</td></tr>
-                    <tr><th class="column">Starbases</th><td id="total-bases">0</td></tr>
-                    <tr><th class="column">Stars</th><td id="total-stars">0</td></tr>
                 </table>
             </section>
         </section>

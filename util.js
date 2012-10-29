@@ -1,3 +1,4 @@
+
 function normalToRange(normal, start, end) {
     return start + Math.round(normal*(end-start-1));
 }
