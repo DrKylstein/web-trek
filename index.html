@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title></title>
-		<meta charset="utf8" />
-		<link rel="stylesheet" type="text/css" href="default.css" />
-		<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="favicon.ico" />
-		<link rel="shortcut icon" type="image/png" href="favicon.png" />
+    <head>
+        <title></title>
+        <meta charset="utf8" />
+        <link rel="stylesheet" type="text/css" href="default.css" />
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="favicon.ico" />
+        <link rel="shortcut icon" type="image/png" href="favicon.png" />
         <script src="jquery.js"></script>
+        <script src="util.js"></script>
         <script src="ui.js"></script>
         <script src="game.js"></script>
-	<body>
+    <body>
         <div id="message-box">
             <h1>Message</h1>
             <p>Foo!</p>
@@ -50,24 +51,9 @@
             </table>
             <h1>Weapons</h1>
             <section id="torpedos">
-                <table>
-                    <tr><th>Torpedos</th><th colspan="2">Vector</th></tr>
-                    <tr>
-                        <td rowspan="2" id="torpedo-count">0</td>
-                        <th>X</th>
-                        <td>
-                            <div id="torpedo-x" data-step=1 data-min=-1 data-max=1 data-value=0 class="spinbox"><div class="minus">-</div><div class="plus">+</div><div class="label"></div></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Y</th>
-                        <td>
-                            <div id="torpedo-y" data-step=1 data-min=-1 data-max=1 data-value=0 class="spinbox"><div class="minus">-</div><div class="plus">+</div><div class="label"></div></div>
-                        </td>
-                    </tr>
-                </table>
-                <a class="button" id="launch-torpedo" href="#">Launch</a>
-                <a class="button" id="reset-torpedo" href="#">Reset</a>
+            <table>
+                <tr><td id="torpedo-count">0</td><td id="torpedo-target">(0,0)</td><td><a class="button" id="launch-torpedo" href="#">Launch</a></td></tr>
+            <table>
             </section>
             <section id="phasers">
                 <a class="button" id="fire-phasers" href="#">Fire Pasers</a>
@@ -76,7 +62,7 @@
             <section id="helm">
                 <!-- Ahl, 1978: Warp up to 8.1, energy units 8 * warp factor, 1 warp = 1 quadrant 8x8 grids-->
                 <table>
-                    <tr><th>Warp</th><th colspan="2">Vector</th></tr>
+                    <tr><th>Warp</th><th>Vector</th></tr>
                     <tr>
                         <td rowspan="2">
                             <div data-display-scale="0.1" data-step=1 data-max=100 data-min=1 data-value=1 id="engines" class="slider">
@@ -84,20 +70,16 @@
                                 <div class="label">0</div>
                             </div>
                         </td>
-                        <th>X</th>
-                        <td>
-                            <div id="course-x" data-display-scale="0.1" data-step=1 data-min=-100 data-max=100 data-value=0 class="spinbox"><div class="minus">-</div><div class="plus">+</div><div class="label"></div></div>
+                        <td id="course-target">
+                            (0,0) (0,0)
                         </td>
                     </tr>
                     <tr>
-                        <th>Y</th>
                         <td>
-                            <div id="course-y" data-display-scale="0.1" data-step=1 data-min=-100 data-max=100 data-value=0 class="spinbox"><div class="minus">-</div><div class="plus">+</div><div class="label"></div></div>
+                            <a id="engage" href="#" class="button disabled">Engage</a>
                         </td>
                     </tr>
                 </table>
-                <a id="engage" href="#" class="button disabled">Engage</a>
-                <a id="reset-course" href="#" class="button disabled">Reset</a>
             </section>
         </section>
         <section class="tabbed" id="astrometrics">
@@ -150,5 +132,5 @@
                 </table>
             </section>
         </section>
-	</body>
+    </body>
 </html>
