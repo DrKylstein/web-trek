@@ -15,6 +15,7 @@ function initializeWidgets() {
     $('.grid').each(function(index) {
         widgets[this.id] = new Grid(this);
     });
+    widgets['message-box'] = new MessageBox($('#message-box')[0]);
     return widgets;
 }
 
@@ -300,4 +301,25 @@ function Grid(element) {
     self.getMarked = function getMarked() {
         return self._marked;
     };
+}
+function MessageBox(element) {
+    var self = this;
+    self.elementRoot = element;
+    self.elementTitle = $(element).find('h1')[0];
+    self.elementText = $(element).find('p')[0];
+    self.elementButton = $(element).find('a')[0];
+    self.onConfirm = function(){};
+    self.show = function show(title, text) {
+        self.elementTitle.innerHTML = title;
+        self.elementText.innerHTML = text;
+        $(self.elementRoot).css('display', 'block');
+    }
+    self.hide = function hide() {
+        $(self.elementRoot).css('display', 'none');
+    }
+    $(self.elementButton).click(function clicked() {
+        self.hide();
+        self.onConfirm();
+    });
+    self.hide();
 }

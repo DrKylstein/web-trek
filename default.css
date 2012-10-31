@@ -150,6 +150,7 @@ h1 {
 	position: absolute;
 	left: 0em;
 	right: 0em;
+	color: #888;
 }
 .vertical .label {
 	top: 2em;
@@ -157,9 +158,9 @@ h1 {
 .horizontal .label {
 	top: 0.25em;
 }
-.bargraph .label.inverse {
+/*.bargraph .label.inverse {
 	color: #000;
-}
+}*/
 .bargraph.vertical .bar {
 	left: 0em;
 	
@@ -220,12 +221,11 @@ h1 {
 }
 
 #message-box {
-	position: absolute;
-	left: 4em;
-	right: 4em;
-	top: 4em;
-	bottom: 4em;
-	display: none;
+	position: fixed;
+	left: 0em;
+	right: 0em;
+	top: 0em;
+	bottom: 0em;
 }
 #message-box .active {
 	display: block;
