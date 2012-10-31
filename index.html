@@ -19,8 +19,11 @@
         <section id="command">
             <h1>Mission Status</h1>
             <table>
-                <tr><th class="column">Location</th><td colspan=2 id="quadrant-name">Subspace Anomaly</td></tr>
-                <tr><th class="column">Stardate</th><td id="time" colspan="2">0</td><td id="end-time">0</td></tr>
+                <tr><th class="column">Location</th><td id="quadrant-name">Subspace Anomaly</td></tr>
+                <tr><th class="column">Stardate</th><td id="time">0</td></tr>
+                <tr><th class="column">Mission Deadline</th><td id="end-time">0</td></tr>
+            </table>
+            <table>
                 <tr><th></th><th>Quadrant</th><th>Galaxy</th>
                 <tr><th class="column">Position</th><td id="sector">(0,0)</td><td id="quadrant">(0,0)</td></tr>
                 <tr><th class="column">Klingons</th><td id="quadrant-klingons">0</td><td id="total-klingons">0</td></tr>
@@ -77,19 +80,18 @@
             <h1>Helm</h1>
             <section id="helm">
                 <table>
-                    <tr><th>Warp Factor</th></tr>
                     <tr>
+                        <th>Warp Factor</th>
                         <td>
                             <div data-display-scale="0.1" data-step=1 data-max=100 data-min=1 data-value=1 id="engines" class="slider horizontal">
                                 <div class="handle"></div>
                                 <div class="label">0</div>
                             </div>
                         </td>
-                        <td>
-                            <a id="engage" href="#" class="button disabled">Engage</a>
-                        </td>
-                    </tr>
+                    </tr> 
+                    <tr><th>ETA</th><td id="eta">0</td></tr> 
                 </table>
+                <a id="engage" href="#" class="button disabled">Engage</a>
             </section>
         </section>
         <section class="tabbed" id="astrometrics">

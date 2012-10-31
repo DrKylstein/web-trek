@@ -74,8 +74,8 @@ function Slider(element) {
     var stepinfo = parseFloatPrecision($(element).attr('data-step'));
     self.step = stepinfo['value'];
     self._precision = stepinfo['precision'];
-    self.max = $(self.elementRoot).attr('data-max');
-    self.min = $(self.elementRoot).attr('data-min');
+    self.max = parseFloat($(self.elementRoot).attr('data-max'));
+    self.min = parseFloat($(self.elementRoot).attr('data-min'));
     self.isHorizontal = $(self.elementRoot).hasClass('horizontal');
     self.displayScale = 1;
     self.displayPrecision = self._precision;
@@ -103,7 +103,7 @@ function Slider(element) {
         var range = self.max - self.min;
         if(self.isHorizontal) {
             availableSpace = $(self.elementRoot).width() - $(self.elementHandle).width();
-            val = (pos / availableSpace) * range;
+            val = ((pos / availableSpace) * range) + self.min;
         } else {
             availableSpace = $(self.elementRoot).height() - $(self.elementHandle).height();
             val = self.max - ((pos / availableSpace) * range);
