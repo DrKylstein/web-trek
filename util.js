@@ -22,7 +22,8 @@ var random = {
     },
     'shuffle':function(array) {
         array.sort(function(a,b){return Math.random()});
-    }
+    },
+    'normal':Math.random
 }
 
 function distance(x1,y1, x2, y2) {

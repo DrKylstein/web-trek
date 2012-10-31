@@ -107,8 +107,6 @@ function Starship(galaxy) {
         this.qy = this.qDestY;
         this.x = this.destX;
         this.y = this.destY;
-        this._warpFactor = 0;
-        this.warpFactorChanged(this.warpFactor);
     };
     
     this.launchTorpedo = function launchTorpedo() {
@@ -129,6 +127,31 @@ function Starship(galaxy) {
             }
         }
     };
+    
+    this.firePhasers = function firePhasers() {
+        var targets = new Array();
+        for(i in this.quadrant.things) {
+            if(this.quadrant.things[i].category == 'klingon') {
+                targets.push(this.quadrant.things[i])
+            }
+        }
+        var perTarget = this.phasers / targets.length
+        this._phasers = 0;
+        this.phasersChanged(0);
+        for(i in targets) {
+            var damage = perTarget / distance(this.x, this.y, targets[i].x, targets[i].y) * (random.normal() + 2);
+            if(damage < 0.15 * targets[i].shields) {
+                continue; //"Sensors show no damage to enemy..."
+            } else {
+                targets[i].shields -= damage;
+                if(targets[i].shields <= 0) {
+                    this._galaxy.quadrants[this.qy][this.qx].klingons--;
+                    this._galaxy.klingons--;
+                    this.quadrant.destroy(targets[i]);
+                }
+            }
+        }
+    }
 }
 
 function Galaxy() {
@@ -504,6 +527,11 @@ function Game(widgets) {
         });
         $('#launch-torpedo').click(function launchClicked() {
             self.player.launchTorpedo()
+            self._chart.update(self.player.qx, self.player.qy, self.galaxy)
+            self._scan.update(self.player.qx, self.player.qy, self.player.quadrant, self.galaxy)
+        });
+        $('#fire-phasers').click(function fireClicked() {
+            self.player.firePhasers()
             self._chart.update(self.player.qx, self.player.qy, self.galaxy)
             self._scan.update(self.player.qx, self.player.qy, self.player.quadrant, self.galaxy)
         });
