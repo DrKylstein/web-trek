@@ -110,7 +110,9 @@ function Slider(element) {
         }        
         return roundDecimal(val, self._precision);
     };
-    self.value = function value() {};
+    self.value = function() {
+        return self._value;
+    };
     self.setValue = function setValue(value) {
         self._value = value;
         if(self.isHorizontal) {
@@ -179,14 +181,19 @@ function BarGraph(element) {
         return self._value;
     };
     self.setValue = function(value) {
+        var dimension;
         self._value = value;
         if(self.isHorizontal) {
             $(self.elementBar).css('left', self._valueToPos(self._value)+'px');
+            dimension = $(self.elementRoot).width();
         } else {
             $(self.elementBar).css('top', self._valueToPos(self._value)+'px');
+            dimension = $(self.elementRoot).height();
         }
         self.elementLabel.innerHTML = self._value.toFixed(self._precision);
-        if(self._valueToPos(self._value) < $(self.elementRoot).height()/2) {
+        
+        
+        if(self._valueToPos(self._value) < dimension/2) {
             $(self.elementLabel).addClass('inverse');
         } else {
             $(self.elementLabel).removeClass('inverse');
@@ -275,6 +282,10 @@ function Grid(element) {
         self._highlighted = [x,y];
         $(self.cells[y][x]).addClass('highlighted');
     };
+    self.getHighlighted = function getHighlighted() {
+        return self._highlighted;
+    };
+    
     self.clearMark = function clearMark() {
         if(self._marked != undefined) {
             $(self.cells[self._marked[1]][self._marked[0]]).removeClass('marked');
@@ -284,7 +295,9 @@ function Grid(element) {
     self.markCell = function markCell(x,y) {
         self.clearMark();
         self._marked = [x,y];
-        console.log(self._marked)
         $(self.cells[y][x]).addClass('marked');
+    };
+    self.getMarked = function getMarked() {
+        return self._marked;
     };
 }

@@ -6,16 +6,8 @@ function Starship(galaxy) {
     this._y = 0; defineWatchableValue(this, 'y', '_y');
     this._qx = 0; defineWatchableValue(this, 'qx', '_qx');
     this._qy = 0; defineWatchableValue(this, 'qy', '_qy');
-    this._targetX = 0; defineWatchableValue(this, 'targetX', '_targetX');
-    this._targetY = 0; defineWatchableValue(this, 'targetY', '_targetY');
-    this._destX = 0; defineWatchableValue(this, 'destX', '_destX');
-    this._destY = 0; defineWatchableValue(this, 'destY', '_destY');
-    this._qDestX = 0; defineWatchableValue(this, 'qDestX', '_qDestX');
-    this._qDestY = 0; defineWatchableValue(this, 'qDestY', '_qDestY');
     this._energy = 3000; defineWatchableValue(this, 'energy', '_energy');
-    this._shields = 0;
-    this._phasers = 0;
-    this._warpFactor = 1;
+    this._shields = 0;  defineWatchableValue(this, 'shields', '_shields');
     this._torpedos = 10; defineWatchableValue(this, 'torpedos', '_torpedos');
     
     this.reset = function reset() {
@@ -23,10 +15,6 @@ function Starship(galaxy) {
         this.y = random.range(10);
         this.qx = random.range(10);
         this.qy = random.range(10);
-        this.destX = this._x;
-        this.destY = this._y;
-        this.qDestX = this._qx;
-        this.qDestY = this._qy;
         this.shields = 0;
         this.phasers = 0;
         this.warpFactor = 1;
@@ -39,80 +27,42 @@ function Starship(galaxy) {
         return (Math.abs(x) + Math.abs(y)) * (w)
     }
     
-    this._setShields = function _setShields(newvalue){
-        var delta = newvalue - this._shields;
+    this.shieldControl = function shieldControl(newvalue){
+        var delta = newvalue - this.shields;
         if (this.energy - delta < 0) {
             delta = this.energy;
             this.energy = 0;
-            this._shields += delta;
+            this.shields += delta;
         } else {
             this.energy -= delta;
-            this._shields = newvalue;
+            this.shields = newvalue;
         }
     };
-    this._getShields = function _getShields() {return this._shields};
-    defineWatchableProperty(this, 'shields', this._getShields, this._setShields)
     
-    this._setPhasers = function _setPhasers(newvalue){
-        var delta = newvalue - this._phasers;
-        if (this.energy - delta < 0) {
-            delta = this.energy;
-            this.energy = 0;
-            this._phasers += delta;
-        } else {
-            this.energy -= delta;
-            this._phasers = newvalue;
+    this.engage = function engage(x, y, qx, qy, warp) {
+        var dx = ((qx * 10) + x) - ((this.qx * 10) + this.x);
+        var dy = ((qy * 10) + y) - ((this.qy * 10) + this.y);
+        var cost = this.travelCost(dx, dy, warp);
+        if(cost > this.energy) {
+            return 0;
         }
-    };
-    this._getPhasers = function _getPhasers() {
-        return this._phasers;
-    };
-    defineWatchableProperty(this, 'phasers', this._getPhasers, this._setPhasers);
-    
-    this._setWarpFactor = function _setWarpFactor(newvalue) {
-        var prevCost = this.travelCost(
-            this.destX-this.x,
-            this.destY-this.y,
-            this._warpFactor
-        );
-        var delta = (
-                    this.travelCost(
-                        this.destX-this.x,
-                        this.destY-this.y,
-                        newvalue
-                    ) - prevCost
-                );
-        if(this.energy - delta < 0){
-            delta = this.energy;
-            var w = this._warpFactor;
-            var x = Math.abs(this.destX-this.x);
-            var y = Math.abs(this.destY-this.y);
-            newCost = prevCost+delta;
-            var nw = newCost / (x+y);
-            newvalue = nw;
+        this.energy -= cost;
+        if(this.qx != qx || this.qy != qy) {
+            this.quadrant = this._galaxy.getQuadrant(qx, qy, [this]);
         }
-        this.energy -= delta;
-        this._warpFactor = newvalue;
-    };
-    this._getWarpFactor = function _getWarpFactor() {
-        return this._phasers;
-    };
-    defineWatchableProperty(this, 'warpFactor', this._getWarpFactor, this._setWarpFactor);
-    
-    this.engage = function engage() {
-        if(this.qx != this.qDestX || this.qy != this.qDestY) {
-            this.quadrant = this._galaxy.getQuadrant(this.qDestX, this.qDestY, [this]);
-        }
-        this.qx = this.qDestX;
-        this.qy = this.qDestY;
-        this.x = this.destX;
-        this.y = this.destY;
+        this.qx = qx;
+        this.qy = qy;
+        this.x = x;
+        this.y = y;
+        var time = 1;
+        
+        return time;
     };
     
-    this.launchTorpedo = function launchTorpedo() {
+    this.launchTorpedo = function launchTorpedo(x,y) {
         if(this.torpedos > 0) {
             --this.torpedos;
-            var target = this.quadrant.sectorContents(this.targetX, this.targetY)
+            var target = this.quadrant.sectorContents(x, y)
             if(target != undefined && target != this) {
                 if(target.category == 'klingon') {
                     this._galaxy.quadrants[this.qy][this.qx].klingons--;
@@ -128,16 +78,23 @@ function Starship(galaxy) {
         }
     };
     
-    this.firePhasers = function firePhasers() {
+    this.firePhasers = function firePhasers(amount) {
+        if (this.energy - amount < 0) {
+            return false;
+        } else {
+            this.energy -= amount;
+        }
+
         var targets = new Array();
         for(i in this.quadrant.things) {
             if(this.quadrant.things[i].category == 'klingon') {
                 targets.push(this.quadrant.things[i])
             }
         }
-        var perTarget = this.phasers / targets.length
-        this._phasers = 0;
-        this.phasersChanged(0);
+        if(!targets) {
+            return false;
+        }
+        var perTarget = amount / targets.length;
         for(i in targets) {
             var damage = perTarget / distance(this.x, this.y, targets[i].x, targets[i].y) * (random.normal() + 2);
             if(damage < 0.15 * targets[i].shields) {
@@ -151,6 +108,7 @@ function Starship(galaxy) {
                 }
             }
         }
+        return true;
     }
 }
 
@@ -402,154 +360,153 @@ function Game(widgets) {
     var self = this;
     this._widgets = widgets;
     this.galaxy = new Galaxy();
-    this.player = new Starship(this.galaxy);
+    this.player = new Starship(self.galaxy);
+    this.startTime = 0;
+    this.duration = 26;
+    this._time = 0; defineWatchableValue(this, 'time', '_time');
+    this.dq = [0,0];
+    this.ds = [0,0];
     
     this._initWidgets = function() {
-        this._scan = new ScannerDisplay(this._widgets['srs']);
-        this._chart = new Starchart(this._widgets['starchart']);
-        this._widgets['shields'].onchange = function shieldsSliderChanged(value){
-            self.player.shields = value;
-        };
-        this.player.shieldsChanged = this._widgets['shields'].setValue;
+        self._scan = new ScannerDisplay(self._widgets['srs']);
+        self._chart = new Starchart(self._widgets['starchart']);
         
-        this._widgets['phasers'].onchange = function phasersSliderChanged(value){
-            self.player.phasers = value;
-        };
-        this.player.phasersChanged = this._widgets['phasers'].setValue;
+        this.timeChanged = function timeChanged(value) {
+            $('#time').html(value);
+            $('#end-time').html(value+self.duration);
+        }
         
-        this._widgets['engines'].onchange = function enginesSliderChanged(value){
-            self.player.warpFactor = value;
+        self._widgets['shields'].onchange = function shieldsSliderChanged(value){
+            self.player.shieldControl(value);
         };
-        this.player.warpFactorChanged = this._widgets['engines'].setValue;
-        
-        this.player.energyChanged = this._widgets['energy'].setValue;
-        this.player.torpedosChanged = function updateTorpedos(value) {
+        self.player.shieldsChanged = self._widgets['shields'].setValue;
+        function updatePhasers(value) {
+            if(self._widgets['phasers'].value() > self.player.energy) {
+                self._widgets['phasers'].setValue(self.player.energy);
+            }
+        }
+        function updateWarp(value) {
+            if(self.player.travelCost( self._widgets['engines'].value()) > self.player.energy) {
+                self._widgets['engines'].setValue(self.player.energy);
+            }
+        }
+        self._widgets['phasers'].onchange = updatePhasers;
+        self._widgets['engines'].onchange = updateWarp;
+        self.player.energyChanged = function energyChanged(value) {
+            self._widgets['energy'].setValue(value);
+            updatePhasers();
+            updateWarp();
+        }
+        self.player.torpedosChanged = function updateTorpedos(value) {
             $("#torpedo-count").html(self.player.torpedos)
         }
         
         
-        this._widgets['srs'].cellClick = function(x,y) {
+        self._widgets['srs'].cellClick = function(x,y) {
             if(self.player.quadrant.sectorContents(x,y)) {
-                self.player.targetX = x;
-                self.player.targetY = y;
                 self._widgets['srs'].highlightCell(x,y);
             } else {
-                self.player.destX = x;
-                self.player.destY = y;
-                self.player.qDestX = self.player.qx;
-                self.player.qDestY = self.player.qy;
+                self.ds = [x, y];
+                self.dq = [self.player.qx, self.player.qy];
                 self._widgets['srs'].markCell(x,y);
             }
         };
-        this._scan.neighborClicked = function neighborClicked(dx,dy) {
-            self.player.qDestX = self.player.qx+dx;
-            self.player.qDestY = self.player.qy+dy;
-            if(dx > 0) {
-                self.player.destX = 0;
-            } else if(dx < 0) {
-                self.player.destX = 9;
-            } else {
-                self.player.destX = self.player.x;
-            }
-            if(dy > 0) {
-                self.player.destY = 0;
-            } else if(dy < 0) {
-                self.player.destY = 9;
-            } else {
-                self.player.destX = self.player.y;
-            }
-            self._widgets['srs'].clearMark();
-            self._widgets['starchart'].markCell(self.player.qx+dx,self.player.qy+dy);
-        }
         
-        
-        this._widgets['starchart'].cellClick = function(x,y) {
-            self.player.qDestX = x;
-            self.player.qDestY = y;
-            if(x > self.player.destX) {
-                self.player.destX = 0;
-            } else if(x < self.player.destX) {
-                self.player.destX = 9;
+        function selectQuadrant(x,y) {
+            if(x > self.dq[0]) {
+                self.ds[0] = 0;
+            } else if(x < self.dq[0]) {
+                self.ds[0] = 9;
             } else {
-                self.player.destX = self.player.x;
+                self.ds[0] = self.player.x;
             }
-            if(y > self.player.destY) {
-                self.player.destY = 0;
-            } else if(y < self.player.destY){
-                self.player.destY = 9;
+            if(y > self.dq[1]) {
+                self.ds[1] = 0;
+            } else if(y < self.dq[1]){
+                self.ds[1] = 9;
             } else {
-                self.player.destX = self.player.y;
+                self.ds[1] = self.player.y;
             }
+            self.dq = [x, y];
             self._widgets['srs'].clearMark();
             self._widgets['starchart'].markCell(x,y);
         };
-        
-        function updateCourse() {
-            $('#course-target').html('('+self.player.qDestX+','+self.player.qDestY+') ('+self.player.destX+','+self.player.destY+')');
-        }
-        this.player.destXChanged = updateCourse;
-        this.player.destYChanged = updateCourse;
-        this.player.qDestXChanged = updateCourse;
-        this.player.qDestYChanged = updateCourse;
-        
-        function updateTarget() {
-            $('#torpedo-target').html('('+self.player.targetX+','+self.player.targetY+')');
-        }
-        this.player.targetXChanged = updateTarget;
-        this.player.targetYChanged = updateTarget;
-        
-        this.player.xChanged = function xChanged(x) {
+        self._scan.neighborClicked = function neighborClicked(dx,dy) {
+            selectQuadrant(self.player.qx+dx, self.player.qy+dy)
+        };
+        self._widgets['starchart'].cellClick = selectQuadrant;
+                        
+        self.player.xChanged = function xChanged(x) {
             $('#sector').html('('+x+','+self.player.y+')');
             self._scan.update(self.player.qx, self.player.qy, self.player.quadrant, self.galaxy)
         };
-        this.player.yChanged = function yChanged(y) {
+        self.player.yChanged = function yChanged(y) {
             $('#sector').html('('+self.player.x+','+y+')');
             self._scan.update(self.player.qx, self.player.qy, self.player.quadrant, self.galaxy)
         };
-        this.player.qxChanged = function qxChanged(x) {
+        self.player.qxChanged = function qxChanged(x) {
             $('#quadrant').html('('+x+','+self.player.qy+')');
             self._chart.update(self.player.qx, self.player.qy, self.galaxy)
             self._scan.update(self.player.qx, self.player.qy, self.player.quadrant, self.galaxy)
             self._widgets['starchart'].highlightCell(self.player.qx, self.player.qy);
         };
-        this.player.qyChanged = function qyChanged(y) {
+        self.player.qyChanged = function qyChanged(y) {
             $('#quadrant').html('('+self.player.qx+','+y+')');
             self._chart.update(self.player.qx, self.player.qy, self.galaxy)
             self._scan.update(self.player.qx, self.player.qy, self.player.quadrant, self.galaxy)
             self._widgets['starchart'].highlightCell(self.player.qx, self.player.qy);
         };
         
-        this.galaxy.klingonsChanged = function klingonsChanged(value) {
+        self.galaxy.klingonsChanged = function klingonsChanged(value) {
             $('#total-klingons').html(value);
         }
-        this.galaxy.starbasesChanged = function starbasesChanged(value) {
+        self.galaxy.starbasesChanged = function starbasesChanged(value) {
             $('#total-bases').html(value);
         }
-        this.galaxy.starsChanged = function starsChanged(value) {
+        self.galaxy.starsChanged = function starsChanged(value) {
             $('#total-stars').html(value);
         }
         
         
         $('#engage').click(function engageClicked() {
-            self.player.engage()
+            if(self.ds[0] == self.player.x && self.ds[1] == self.player.y &&
+                self.dq[0] == self.player.qx && self.dq[1] == self.player.qy
+            ) {
+                return;
+            }
+            self.player.engage(self.ds[0], self.ds[1], self.dq[0], self.dq[1], self._widgets['engines'].value());
             self._widgets['srs'].clearMark();
             self._widgets['starchart'].clearMark();
         });
         $('#launch-torpedo').click(function launchClicked() {
-            self.player.launchTorpedo()
-            self._chart.update(self.player.qx, self.player.qy, self.galaxy)
-            self._scan.update(self.player.qx, self.player.qy, self.player.quadrant, self.galaxy)
+            if(self._widgets['srs'].getHighlighted() == undefined) {
+                return;
+            }
+            self.player.launchTorpedo(self._widgets['srs'].getHighlighted()[0], self._widgets['srs'].getHighlighted()[1]);
+            self._chart.update(self.player.qx, self.player.qy, self.galaxy);
+            self._scan.update(self.player.qx, self.player.qy, self.player.quadrant, self.galaxy);
+            self._widgets['srs'].clearHighlight();
         });
         $('#fire-phasers').click(function fireClicked() {
-            self.player.firePhasers()
-            self._chart.update(self.player.qx, self.player.qy, self.galaxy)
-            self._scan.update(self.player.qx, self.player.qy, self.player.quadrant, self.galaxy)
+            self.player.firePhasers(self._widgets['phasers'].value());
+            self._chart.update(self.player.qx, self.player.qy, self.galaxy);
+            self._scan.update(self.player.qx, self.player.qy, self.player.quadrant, self.galaxy);
         });
+        //is there a better place?
+        this.time = (random.range(1,21) + 20)*100;
     };
     this._initWidgets();
     this.newGame = function() {
         this.galaxy.generate();
         this.player.reset();
+        this.startTime = this.time;
+        this.duration = 25 + random.range(1,11);
+        this.ds = [this.player.x, this.player.y];
+        this.dq = [this.player.qx, this.player.qy];
+        this._widgets['srs'].clearMark();
+        this._widgets['starchart'].clearMark();
+        this._widgets['srs'].clearHighlight();
+        this._widgets['starchart'].highlightCell(this.player.qx, this.player.qy);
         this._chart.reset();
         this._scan.update(this.player.qx,this.player.qy, this.player.quadrant, this.galaxy);
         this._chart.update(this.player.qx,this.player.qy, this.galaxy);
