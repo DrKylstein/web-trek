@@ -27,57 +27,64 @@
                 <tr><th class="column">Starbases</th><td id="quadrant-bases">0</td><td id="total-bases">0</td></tr>
                 <!--tr><th class="column">Stars</th><td id="quadrant-stars">0</td><td id="total-stars">0</td></tr-->
             </table>
-            <h1>Energy Flow</h1>
+            <h1>Engineering</h1>
             <table>
                 <tr>
+                    <th>Energy</th>
                     <td>
-                        <div data-step=1 data-min=0 data-max=3000 data-value=3000 id="energy" class="bargraph">
+                        <div data-step=1 data-min=0 data-max=3000 data-value=3000 id="energy" class="bargraph horizontal">
                             <div class="bar"></div>
                             <div class="label">3000</div>
                         </div>
                     </td>
-                    <td>
-                        <div data-step=1 data-min=0 data-max=3000 data-value=0 id="shields" class="slider">
-                            <div class="handle"></div>
-                            <div class="label">0</div>
-                        </div>
-                    </td>
-                    <td>
-                        <div data-step=1 data-min=0 data-max=3000 data-value=0 id="phasers" class="slider">
-                            <div class="handle"></div>
-                            <div class="label">0</div>
-                        </div>
-                    </td>
-                    <td>
-                    </td>
                 </tr>
-                <tr><th>Energy</th><th>Shields</th><th>Phasers</th></tr>
+            </table>
+            <h2>Repair Estimates</h2>
+            <table>
+                <tr><th>System</th><th>Time remaining</th></tr>
+                <tr></tr>
             </table>
             <h1>Weapons</h1>
-            <section id="torpedos">
             <table>
-                <tr><td id="torpedo-count">0</td><td id="torpedo-target">(0,0)</td><td><a class="button" id="launch-torpedo" href="#">Launch</a></td></tr>
-            <table>
-            </section>
-            <section id="phasers">
-                <a class="button" id="fire-phasers" href="#">Fire Pasers</a>
-            </section>
+                <tr>
+                    <th class="column">Shields</th>
+                    <td>
+                        <div data-step=1 data-min=0 data-max=3000 data-value=0 id="shields" class="slider horizontal">
+                            <div class="handle"></div>
+                            <div class="label">0</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="column">Torepdos</th>
+                    <td id="torpedo-count">0</td>
+                    <!--td id="torpedo-target">(0,0)</td-->
+                    <td><a class="button" id="launch-torpedo" href="#">Launch</a></td>
+                </tr>
+                <tr>
+                    <th class="column">Phasers</th>
+                    <td>
+                        <div data-step=1 data-min=0 data-max=3000 data-value=0 id="phasers" class="slider horizontal">
+                            <div class="handle"></div>
+                            <div class="label">0</div>
+                        </div>
+                    </td>
+                    <td>
+                        <a class="button" id="fire-phasers" href="#">Fire</a>
+                    </td>
+                </tr>
+            </table>
             <h1>Helm</h1>
             <section id="helm">
                 <table>
-                    <tr><th>Warp</th><th>Vector</th></tr>
+                    <tr><th>Warp Factor</th></tr>
                     <tr>
-                        <td rowspan="2">
-                            <div data-display-scale="0.1" data-step=1 data-max=100 data-min=1 data-value=1 id="engines" class="slider">
+                        <td>
+                            <div data-display-scale="0.1" data-step=1 data-max=100 data-min=1 data-value=1 id="engines" class="slider horizontal">
                                 <div class="handle"></div>
                                 <div class="label">0</div>
                             </div>
                         </td>
-                        <td id="course-target">
-                            (0,0) (0,0)
-                        </td>
-                    </tr>
-                    <tr>
                         <td>
                             <a id="engage" href="#" class="button disabled">Engage</a>
                         </td>

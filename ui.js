@@ -76,6 +76,7 @@ function Slider(element) {
     self._precision = stepinfo['precision'];
     self.max = $(self.elementRoot).attr('data-max');
     self.min = $(self.elementRoot).attr('data-min');
+    self.isHorizontal = $(self.elementRoot).hasClass('horizontal');
     self.displayScale = 1;
     self.displayPrecision = self._precision;
     if($(element).attr('data-display-scale')) {
@@ -87,19 +88,36 @@ function Slider(element) {
         return newvalue;
     };
     self._sliderValueToPos = function _sliderValueToPos(value) {
-        var availableHeight = $(self.elementRoot).height() - $(self.elementHandle).height();
-        return availableHeight - (((value - self.min) / self.max) * availableHeight);
+        var availableSpace;
+        if(self.isHorizontal) {
+            availableSpace = $(self.elementRoot).width() - $(self.elementHandle).width();
+            return ((value - self.min) / self.max) * availableSpace;
+        } else {
+            availableSpace = $(self.elementRoot).height() - $(self.elementHandle).height();
+            return availableSpace - (((value - self.min) / self.max) * availableSpace);
+        }
     };
     self._sliderPosToValue = function _sliderPosToValue(pos) {
-        var availableHeight = $(self.elementRoot).height() - $(self.elementHandle).height();
+        var availableSpace,
+            val;
         var range = self.max - self.min;
-        var val = self.max - ((pos / availableHeight) * range);
+        if(self.isHorizontal) {
+            availableSpace = $(self.elementRoot).width() - $(self.elementHandle).width();
+            val = (pos / availableSpace) * range;
+        } else {
+            availableSpace = $(self.elementRoot).height() - $(self.elementHandle).height();
+            val = self.max - ((pos / availableSpace) * range);
+        }        
         return roundDecimal(val, self._precision);
     };
     self.value = function value() {};
     self.setValue = function setValue(value) {
         self._value = value;
-        $(self.elementHandle).css('margin-top', self._sliderValueToPos(self._value)+'px');
+        if(self.isHorizontal) {
+            $(self.elementHandle).css('margin-left', self._sliderValueToPos(self._value)+'px');
+        } else {
+            $(self.elementHandle).css('margin-top', self._sliderValueToPos(self._value)+'px');
+        }
         $(self.elementLabel).html((self._value * self.displayScale).toFixed(self.displayPrecision));
     };
     self.mousedown = function(event) {
@@ -111,19 +129,29 @@ function Slider(element) {
     };
     self.mousemove = function mousemove(event) {
         event.preventDefault();
-        var start_y = $(self.elementRoot).offset().top;
-        var slider_y = $(self.elementHandle).css('margin-top');
-        slider_y = slider_y.substr(0, top.length-2);
-        var newslider_y = slider_y + event.pageY-start_y;
-        if (newslider_y > $(self.elementRoot).height() - $(self.elementHandle).height()) {
-            newslider_y = $(self.elementRoot).height() - $(self.elementHandle).height();
+        var baseline,
+            currentLine,
+            cursorLine,
+            availableSpace;
+        if(self.isHorizontal) {
+            cursorLine = event.pageX;
+            baseline = $(self.elementRoot).offset().left;
+            availableSpace = $(self.elementRoot).width() - $(self.elementHandle).width();
+        } else {
+            cursorLine = event.pageY;
+            baseline = $(self.elementRoot).offset().top;
+            availableSpace = $(self.elementRoot).height() - $(self.elementHandle).height();
         }
-        if (newslider_y < 0) {
-            newslider_y = 0;
+        var newLine = cursorLine-baseline;
+        if (newLine > availableSpace) {
+            newLine = availableSpace;
         }
-        var newvalue = self._sliderPosToValue(newslider_y);
-        self.setValue(newvalue);
-        self.onchange(newvalue);
+        if (newLine < 0) {
+            newLine = 0;
+        }
+        var newValue = self._sliderPosToValue(newLine);
+        self.setValue(newValue);
+        self.onchange(newValue);
     };
     $(self.elementRoot).mousedown(self.mousedown);
     self.setValue(parseFloat($(self.elementRoot).attr('data-value')));
@@ -135,17 +163,28 @@ function BarGraph(element) {
     self.elementBar = $(element).find('.bar')[0];
     self.elementLabel = $(element).find('.label')[0];
     var stepinfo = parseFloatPrecision($(element).attr('data-step'));
+    self.isHorizontal = $(self.elementRoot).hasClass('horizontal');
     self._precision = stepinfo['precision'];
     self._value = 0;
     self._valueToPos = function (value) {
-        return $(self.elementRoot).height() - (value * $(self.elementRoot).height() / $(self.elementRoot).attr('data-max'));
+        var dimension;
+        if(self.isHorizontal) {
+            dimension = $(self.elementRoot).width();
+        } else {
+            dimension = $(self.elementRoot).height();
+        }
+        return dimension - ((value * dimension) / $(self.elementRoot).attr('data-max'));
     };
     self.value = function() {
         return self._value;
     };
     self.setValue = function(value) {
         self._value = value;
-        $(self.elementBar).css('top', self._valueToPos(self._value)+'px');
+        if(self.isHorizontal) {
+            $(self.elementBar).css('left', self._valueToPos(self._value)+'px');
+        } else {
+            $(self.elementBar).css('top', self._valueToPos(self._value)+'px');
+        }
         self.elementLabel.innerHTML = self._value.toFixed(self._precision);
         if(self._valueToPos(self._value) < $(self.elementRoot).height()/2) {
             $(self.elementLabel).addClass('inverse');
@@ -202,6 +241,8 @@ function Grid(element) {
     var self = this;
     self.elementRoot = element;
     self.cells = new Array();
+    self._highlighted;
+    self._marked;
     self.cellClick = function defaultCellClick(x,y){};
     self._handleCellClick = function _handleCellClick(x,y) {
         self.cellClick(x,y);
@@ -222,5 +263,28 @@ function Grid(element) {
     });
     self.cellHtml = function(x, y, text) {
         self.cells[y][x].innerHTML = text;
+    };
+    self.clearHighlight = function clearHighlight() {
+        if(self._highlighted != undefined) {
+            $(self.cells[self._highlighted[1]][self._highlighted[0]]).removeClass('highlighted');
+        }
+        self._highlighted = undefined;
+    }
+    self.highlightCell = function highlightCell(x,y) {
+        self.clearHighlight();
+        self._highlighted = [x,y];
+        $(self.cells[y][x]).addClass('highlighted');
+    };
+    self.clearMark = function clearMark() {
+        if(self._marked != undefined) {
+            $(self.cells[self._marked[1]][self._marked[0]]).removeClass('marked');
+        }
+        self._marked = undefined;
+    }
+    self.markCell = function markCell(x,y) {
+        self.clearMark();
+        self._marked = [x,y];
+        console.log(self._marked)
+        $(self.cells[y][x]).addClass('marked');
     };
 }

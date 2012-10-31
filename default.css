@@ -54,6 +54,14 @@ td.adjacent-summary {
 	width: inherit;
 }
 
+.grid .cell.marked {
+	background: #fff;
+	color: #000;
+}
+.grid .cell.highlighted {
+	color: #f00;
+}
+
 th {
 	text-align: center;
 }
@@ -110,31 +118,58 @@ h1 {
 }
 
 .slider, .bargraph {
-	/*width: 1.5em;*/
-	height: 5em;
 	position: relative;
 	overflow: hidden;
 	cursor: pointer;
+	margin: auto;
 }
-.slider .handle {
-	background: #fff;
+.slider.vertical, .bargraph.vertical {
+	height: 5em;
+	width: 1.5em;
+}
+.slider.vertical .handle {
 	margin-top: 0px;
 	height: 0.25em;
 }
-.slider .label, .bargraph .label {
-	position: absolute;
-	top: 2em;
+
+.horizontal, .horizontal {
+	width: 5em;
+	height: 1.5em;
+}
+.slider.horizontal .handle {
+	margin-left: 0px;
+	width: 0.25em;
+	height: 100%;
+}
+
+.slider .handle {
+	background: #fff;
+}
+.label {
 	text-align: center;
+	position: absolute;
 	left: 0em;
 	right: 0em;
 }
-
+.vertical .label {
+	top: 2em;
+}
+.horizontal .label {
+	top: 0.25em;
+}
 .bargraph .label.inverse {
 	color: #000;
 }
+.bargraph.vertical .bar {
+	left: 0em;
+	
+}
+.bargraph.horizontal .bar {
+	top: 0em;
+}
+
 .bargraph .bar {
 	position: absolute;
-	left: 0em;
 	right: 0em;
 	bottom: 0em;
 	background: #fff;
@@ -182,9 +217,6 @@ h1 {
 }
 #astrometrics {
 	overflow: hidden;
-}
-#engines {
-	width: 1.5em;
 }
 
 #message-box {

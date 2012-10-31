@@ -432,11 +432,13 @@ function Game(widgets) {
             if(self.player.quadrant.sectorContents(x,y)) {
                 self.player.targetX = x;
                 self.player.targetY = y;
+                self._widgets['srs'].highlightCell(x,y);
             } else {
                 self.player.destX = x;
                 self.player.destY = y;
                 self.player.qDestX = self.player.qx;
                 self.player.qDestY = self.player.qy;
+                self._widgets['srs'].markCell(x,y);
             }
         };
         this._scan.neighborClicked = function neighborClicked(dx,dy) {
@@ -456,6 +458,8 @@ function Game(widgets) {
             } else {
                 self.player.destX = self.player.y;
             }
+            self._widgets['srs'].clearMark();
+            self._widgets['starchart'].markCell(self.player.qx+dx,self.player.qy+dy);
         }
         
         
@@ -476,6 +480,8 @@ function Game(widgets) {
             } else {
                 self.player.destX = self.player.y;
             }
+            self._widgets['srs'].clearMark();
+            self._widgets['starchart'].markCell(x,y);
         };
         
         function updateCourse() {
@@ -504,11 +510,13 @@ function Game(widgets) {
             $('#quadrant').html('('+x+','+self.player.qy+')');
             self._chart.update(self.player.qx, self.player.qy, self.galaxy)
             self._scan.update(self.player.qx, self.player.qy, self.player.quadrant, self.galaxy)
+            self._widgets['starchart'].highlightCell(self.player.qx, self.player.qy);
         };
         this.player.qyChanged = function qyChanged(y) {
             $('#quadrant').html('('+self.player.qx+','+y+')');
             self._chart.update(self.player.qx, self.player.qy, self.galaxy)
             self._scan.update(self.player.qx, self.player.qy, self.player.quadrant, self.galaxy)
+            self._widgets['starchart'].highlightCell(self.player.qx, self.player.qy);
         };
         
         this.galaxy.klingonsChanged = function klingonsChanged(value) {
@@ -524,6 +532,8 @@ function Game(widgets) {
         
         $('#engage').click(function engageClicked() {
             self.player.engage()
+            self._widgets['srs'].clearMark();
+            self._widgets['starchart'].clearMark();
         });
         $('#launch-torpedo').click(function launchClicked() {
             self.player.launchTorpedo()
