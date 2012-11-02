@@ -5,11 +5,13 @@
 
 //add docking
 
-//consider either changing travel to follow original restrictions 
-//(travel only warp's distance per turn) or to give klingons equivalent number 
-//of move turns (maybe also restrict them to 1 sector per turn)
+//because of klingon/enterprise move parity, and also because I want to click 
+//and move without worrying about warp factor, let's make warp factor 
+//computer-controlled, emulating the classic warp=distance feature.
 
 //better sanity checking for travel/torpedo coordinates, allow torpedos to explode in space.
+
+//torpedo blast radius to discourage overuse?
 
 function Galaxy() {
     this.quadrants = new Array();
@@ -167,13 +169,6 @@ function Starchart(w,h) {
     }
 }
 
-function travelTime(dx, dy, w) {
-    return Math.max((Math.abs(dx) + Math.abs(dy))/w, 1);
-}
-function travelCost(dx, dy, w) {
-    return (Math.abs(dx) + Math.abs(dy)) * w;
-}
-
 function Starship(galaxy) {
     this.category = 'starship';
     this._galaxy = galaxy;
@@ -213,22 +208,36 @@ function Starship(galaxy) {
         }
     };
     
-    this.move = function move(x, y, qx, qy, warp) {
-        var dx = ((qx * 10) + x) - ((this.quadrant.x * 10) + this.x);
-        var dy = ((qy * 10) + y) - ((this.quadrant.y * 10) + this.y);
-        var cost = travelCost(dx, dy, warp);
-        if(cost > this.energy) {
+    this.travelCost = function travelCost(dest, qDest) {
+        var uDest = this._galaxy.unifiedCoordinates(dest, qDest);
+        var uPos = this._galaxy.unifiedCoordinates([this.x, this.y], [this.quadrant.x, this.quadrant.y]);
+        return Math.floor(distance(uDest[0], uDest[1], uPos[0], uPos[1]));
+    }
+    
+    this.travelTime = function travelTime(cost) {
+        return Math.min(cost, 10);
+    }
+    
+    this.move = function move(dest, qDest) {
+        var cost = this.travelCost(dest, qDest);
+        if(this.energy - cost < 0) {
             return 0;
         }
+        if(this.shields > 0 && cost > 1) {
+            return 0; //cannot exceed warp 0.1 with shields up
+        }
+        if(this.damaged['engines'] && cost > 2) {
+            return 0; //cannot exceed warp 0.2 when engines are damaged
+        }
+
         this.energy -= cost;
-        this.x = x;
-        this.y = y;
-        if(this.quadrant.x != qx || this.quadrant.y != qy) {
-            this.quadrant = this._galaxy.getQuadrant(qx, qy, [this]);
+        this.x = dest[0];
+        this.y = dest[1];
+        if(this.quadrant.x != qDest[0] || this.quadrant.y != qDest[1]) {
+            this.quadrant = this._galaxy.getQuadrant(qDest[0], qDest[1], [this]);
             this.starchart.update(this._galaxy, [this.quadrant.x, this.quadrant.y]);
         }
-        var elapsed_time = travelTime(dx, dy, warp);
-        return elapsed_time;
+        return this.travelTime(cost);
     };
     
     this.launchTorpedo = function launchTorpedo(x,y) {
@@ -493,27 +502,14 @@ function Game(widgets) {
     }
     
     this._updateWarp = function _updateWarp(value) {
-        var warp = self._widgets['engines'].value();
-        if(self.player.shields > 0) {
-            warp = 1;
-            self._widgets['engines'].setValue(warp);
+        var cost = self.player.travelCost(self.ds, self.dq);
+        var travelTime = self.player.travelTime(cost);
+        if(travelTime > 0) {
+            $('#eta').html((travelTime/10).toFixed(1));
+        } else {
+            $('#eta').html(0.0);
         }
-        if(self.player.damaged['engines']) {
-            warp = Math.max(warp, 2);
-            self._widgets['engines'].setValue(warp);
-        }
-        var currentPos = self.galaxy.unifiedCoordinates(
-            [self.player.x, self.player.y], [self.player.quadrant.x, self.player.quadrant.y]);
-        var newPos = self.galaxy.unifiedCoordinates(
-            self.ds, self.dq);
-        var dx = Math.abs(newPos[0] - currentPos[0]);
-        var dy = Math.abs(newPos[1] - currentPos[1]);
-        var cost = travelCost(dx, dy, warp);
-        if(cost > self.player.energy) {
-            warp = self.player.energy / (dx + dy);
-            self._widgets['engines'].setValue(warp);
-        }
-        $('#eta').html((travelTime(dx, dy, warp)/10).toFixed(1));
+        $('#travel-energy').html(cost);
     }
 
     this._quadrantChanged = function _quadrantChanged() {
@@ -570,7 +566,6 @@ function Game(widgets) {
             }
         }
         self._widgets['phasers'].onchange = updatePhasers;
-        self._widgets['engines'].onchange = self._updateWarp;
         self.player.energyChanged = function energyChanged(value) {
             self._widgets['energy'].setValue(value);
             updatePhasers();
@@ -585,6 +580,8 @@ function Game(widgets) {
             self.ds = [x, y];
             self.dq = [self.player.quadrant.x, self.player.quadrant.y];
             self._widgets['srs'].markCell(x,y);
+            self._widgets['starchart'].clearMark();
+            self._scan.clearNeighborMark();
             self._updateWarp();
         };
         
@@ -607,7 +604,6 @@ function Game(widgets) {
             self._widgets['srs'].clearMark();
             self._widgets['starchart'].markCell(x,y);
             var vec = [x-self.player.quadrant.x,y-self.player.quadrant.y];
-            console.log(vec);
             vec = normalizeManhattan(vec);
             self._scan.markNeighbor(vec);
             self._updateWarp();
@@ -643,8 +639,13 @@ function Game(widgets) {
             if(self.ds[0] == self.player.x && self.ds[1] == self.player.y && !newQuad) {
                 return;
             }
-            var dt = self.player.move(self.ds[0], self.ds[1], 
-                self.dq[0], self.dq[1], self._widgets['engines'].value());
+            if(self.player.travelCost(self.ds, self.dq) > self.player.energy) {
+                return;
+            }
+            var dt = self.player.move(self.ds, self.dq);
+            if(dt <= 0) {
+                return;
+            }
             self.time += dt;
             if(newQuad) {
                 self._newQuadrant();
