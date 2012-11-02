@@ -1,4 +1,13 @@
-
+function normalizeManhattan(vec) {
+    var newVec = [vec[0], vec[1]];
+    if(newVec[0]) {
+        newVec[0] = vec[0]/Math.abs(vec[0]);
+    }
+    if(newVec[1]) {
+        newVec[1] = vec[1]/Math.abs(vec[1]);
+    }
+    return newVec;
+}
 function normalToRange(normal, start, end) {
     return start + Math.round(normal*(end-start-1));
 }

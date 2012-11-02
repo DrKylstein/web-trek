@@ -15,7 +15,9 @@ function initializeWidgets() {
     $('.grid').each(function(index) {
         widgets[this.id] = new Grid(this);
     });
-    widgets['message-box'] = new MessageBox($('#message-box')[0]);
+    $('.message-box').each(function(index) {
+        widgets[this.id] = new MessageBox(this);
+    });
     return widgets;
 }
 
@@ -192,13 +194,6 @@ function BarGraph(element) {
             dimension = $(self.elementRoot).height();
         }
         self.elementLabel.innerHTML = self._value.toFixed(self._precision);
-        
-        
-        if(self._valueToPos(self._value) < dimension/2) {
-            $(self.elementLabel).addClass('inverse');
-        } else {
-            $(self.elementLabel).removeClass('inverse');
-        }
     };
     self.setValue(parseFloat($(self.elementRoot).attr('data-value')));
 }
@@ -249,7 +244,6 @@ function Grid(element) {
     var self = this;
     self.elementRoot = element;
     self.cells = new Array();
-    self._highlighted;
     self._marked;
     self.cellClick = function defaultCellClick(x,y){};
     self._handleCellClick = function _handleCellClick(x,y) {
@@ -272,20 +266,6 @@ function Grid(element) {
     self.cellHtml = function(x, y, text) {
         self.cells[y][x].innerHTML = text;
     };
-    self.clearHighlight = function clearHighlight() {
-        if(self._highlighted != undefined) {
-            $(self.cells[self._highlighted[1]][self._highlighted[0]]).removeClass('highlighted');
-        }
-        self._highlighted = undefined;
-    }
-    self.highlightCell = function highlightCell(x,y) {
-        self.clearHighlight();
-        self._highlighted = [x,y];
-        $(self.cells[y][x]).addClass('highlighted');
-    };
-    self.getHighlighted = function getHighlighted() {
-        return self._highlighted;
-    };
     
     self.clearMark = function clearMark() {
         if(self._marked != undefined) {
@@ -305,13 +285,13 @@ function Grid(element) {
 function MessageBox(element) {
     var self = this;
     self.elementRoot = element;
-    self.elementTitle = $(element).find('h1')[0];
-    self.elementText = $(element).find('p')[0];
+    //self.elementTitle = $(element).find('h1')[0];
+    //self.elementText = $(element).find('p')[0];
     self.elementButton = $(element).find('a')[0];
     self.onConfirm = function(){};
-    self.show = function show(title, text) {
-        self.elementTitle.innerHTML = title;
-        self.elementText.innerHTML = text;
+    self.show = function show(/*title, text*/) {
+        //self.elementTitle.innerHTML = title;
+        //self.elementText.innerHTML = text;
         $(self.elementRoot).css('display', 'block');
     }
     self.hide = function hide() {
