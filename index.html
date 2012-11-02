@@ -11,22 +11,7 @@
         <script src="ui.js"></script>
         <script src="game.js"></script>
     <body>
-        <section id="command">
-            <section>
-                <h1><span>Mission Status</span></h1>
-                <table>
-                    <tr><th class="column">Location</th><td id="quadrant-name">Subspace Anomaly</td></tr>
-                    <tr><th class="column">Stardate</th><td id="time">0</td></tr>
-                    <tr><th class="column">Mission Deadline</th><td id="end-time">0</td></tr>
-                </table>
-                <table>
-                    <tr><th></th><th>Quadrant</th><th>Galaxy</th>
-                    <tr><th class="column">Position</th><td id="sector">(0,0)</td><td id="quadrant">(0,0)</td></tr>
-                    <tr><th class="column">Borg</th><td id="quadrant-klingons">0</td><td id="total-klingons">0</td></tr>
-                    <tr><th class="column">Starbases</th><td id="quadrant-bases">0</td><td id="total-bases">0</td></tr>
-                    <!--tr><th class="column">Stars</th><td id="quadrant-stars">0</td><td id="total-stars">0</td></tr-->
-                </table>
-            </section>
+        <div id="command">
             <section>
                 <h1><span>Weapons</span></h1>
                 <table>
@@ -75,6 +60,24 @@
                 </table>
                 <a id="engage" href="#" class="button disabled">Engage</a>
             </section>
+        </div>
+        <div id="reports">
+            <section>
+                <h1><span>Mission Status</span></h1>
+                <table>
+                    <!--tr><th class="column">Location</th><td id="quadrant-name">Subspace Anomaly</td></tr-->
+                    <tr><th class="column">Condition</th><td id="condition">Green</td></tr>
+                    <tr><th class="column">Stardate</th><td id="time">0</td></tr>
+                    <tr><th class="column">Mission Deadline</th><td id="end-time">0</td></tr>
+                </table>
+                <table>
+                    <tr><th></th><th>Nearby</th><th>Total</th>
+                    <!--tr><th class="column">Position</th><td id="sector">(0,0)</td><td id="quadrant">(0,0)</td></tr-->
+                    <tr><th class="column">Klingons</th><td id="quadrant-klingons">0</td><td id="total-klingons">0</td></tr>
+                    <tr><th class="column">Starbases</th><td id="quadrant-bases">0</td><td id="total-bases">0</td></tr>
+                    <!--tr><th class="column">Stars</th><td id="quadrant-stars">0</td><td id="total-stars">0</td></tr-->
+                </table>
+            </section>
             <section>
                 <h1><span>Engineering</span></h1>
                 <table>
@@ -100,7 +103,7 @@
                     <tr><th class="column">Library Computer</th><td id="library-damage">0</td></tr>
                 </table>
             </section>
-        </section>
+        </div>
         <section class="tabbed" id="astrometrics">
             <ol>
                 <li><a href="#">Sensor Scan</a></li>
@@ -108,48 +111,53 @@
             </ol>
             <section id="sensors">
                 <table id="srs" class="grid">
-                    <tr><td class="adjacent-summary" id="summary-northwest">000</td><td class="adjacent-summary" colspan="10" id="summary-north">000</td><td id="summary-northeast" class="adjacent-summary">000</td></tr>
-                    <tr><td class="adjacent-summary" id="summary-west" rowspan="10">000</td>
-                        <td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td>
+                    <tr><td class="adjacent-summary" id="summary-northwest">000</td><td></td><td class="adjacent-summary" colspan="10" id="summary-north">000</td><td id="summary-northeast" class="adjacent-summary">000</td></tr>
+                    <tr><th></th><th></th><th>01</th><th>02</th><th>03</th><th>04</th><th>05</th><th>06</th><th>07</th><th>08</th><th>09</th><th>10</th><tr>
+                        <td class="adjacent-summary" id="summary-west" rowspan="10">000</td>
+                        <th>01</th><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td>
                         <td class="adjacent-summary" rowspan="10" id="summary-east">000</td></tr>
-                    <tr><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
-                    <tr><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
-                    <tr><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
-                    <tr><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
-                    <tr><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
-                    <tr><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
-                    <tr><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
-                    <tr><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
-                    <tr><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
-                    <tr><td class="adjacent-summary" id="summary-southwest">000</td><td class="adjacent-summary" colspan="10" id="summary-south">000</td><td class="adjacent-summary" id="summary-southeast">000</td></tr>
+                    </tr>
+                    <tr><th>02</th><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
+                    <tr><th>03</th><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
+                    <tr><th>04</th><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
+                    <tr><th>05</th><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
+                    <tr><th>06</th><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
+                    <tr><th>07</th><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
+                    <tr><th>08</th><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
+                    <tr><th>09</th><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
+                    <tr><th>10</th><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
+                    <tr><td class="adjacent-summary" id="summary-southwest">000</td><td></td><td class="adjacent-summary" colspan="10" id="summary-south">000</td><td class="adjacent-summary" id="summary-southeast">000</td></tr>
                 </table>
             </section>
             <section id="galaxy">
                 <table id="starchart" class="grid">
-                    <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
-                    <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
-                    <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
-                    <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
-                    <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
-                    <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
-                    <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
-                    <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
-                    <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
-                    <tr><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td></tr>
+                    <tr><th>&nbsp;</th></tr>
+                    <tr><th></th><th>I</th><th>II</th><th>III</th><th>IV</th><th>V</th><th>I</th><th>II</th><th>III</th><th>IV</th><th>V</th></tr>
+                    <!--tr><th></th><th>01</th><th>02</th><th>03</th><th>04</th><th>05</th><th>06</th><th>07</th><th>08</th><th>09</th><th>10</th></tr-->
+                    <tr><th>Antares</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Sirius</th></tr>
+                    <tr><th>Rigel</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Deneb</th></tr>
+                    <tr><th>Procyon</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Capella</th></tr>
+                    <tr><th>Vega</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Betelgeuse</th></tr>
+                    <tr><th>Canopus</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Aldebaran</th></tr>
+                    <tr><th>Altair</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Regulus</th></tr>
+                    <tr><th>Sagitarius</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Arcturus</th></tr>
+                    <tr><th>Pollux</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Spica</th></tr>
+                    <tr><th>Fomalhaut</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Navi</th></tr>
+                    <tr><th>Enath</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Kastra</th></tr>
+                    <tr><th>&nbsp;</th></tr>
                 </table>
             </section>
         </section>
-        <div id="time-message" class="message-box">
+        <section id="time-message" class="message-box">
             <h1><span>Incoming Message</span></h1>
             <p>
-                We are the Borg. 
-                You will be assimilated. 
-                All remaining forces have been neutralized.
-                Resistance is futile.
+                You are too late!
+                We have taken Federation HQ in the name of the Klingon Empire.
+                If you give up now, we may allow you a warrior's death!
             </p>
             <a href="#" class="button">Try Again</a>
-        </div>
-        <div id="destroyed-message" class="message-box">
+        </section>
+        <section id="destroyed-message" class="message-box">
             <h1><span>Emergency Alert</span></h1>
             <p>
                 The ship has suffered critical damage! 
@@ -157,6 +165,6 @@
                 The mission is forefeit.
             </p>
             <a href="#" class="button">Try Again</a>
-        </div>
+        </section>
     </body>
 </html>

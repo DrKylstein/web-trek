@@ -5,10 +5,6 @@
 
 //add docking
 
-//because of klingon/enterprise move parity, and also because I want to click 
-//and move without worrying about warp factor, let's make warp factor 
-//computer-controlled, emulating the classic warp=distance feature.
-
 //better sanity checking for travel/torpedo coordinates, allow torpedos to explode in space.
 
 //torpedo blast radius to discourage overuse?
@@ -518,6 +514,13 @@ function Game(widgets) {
         var lrs = self.player.longRangeSensors();
         $('#quadrant-klingons').html(lrs[1][1].klingons)
         $('#quadrant-bases').html(lrs[1][1].starbases)
+        if(lrs[1][1].klingons > 0) {
+            $("#condition").html('Red');
+        } else if(self.player.energy < 300) {
+            $("#condition").html('Yellow');
+        } else {
+            $("#condition").html('Green');
+        }
         self._widgets['srs'].clearMark();
         self._widgets['starchart'].clearMark();
         self._scan.clearNeighborMark();
