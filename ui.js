@@ -187,7 +187,7 @@ function BarGraph(element) {
         var dimension;
         self._value = value;
         if(self.isHorizontal) {
-            $(self.elementBar).css('left', self._valueToPos(self._value)+'px');
+            $(self.elementBar).css('right', self._valueToPos(self._value)+'px');
             dimension = $(self.elementRoot).width();
         } else {
             $(self.elementBar).css('top', self._valueToPos(self._value)+'px');
@@ -287,7 +287,7 @@ function MessageBox(element) {
     self.elementRoot = element;
     //self.elementTitle = $(element).find('h1')[0];
     //self.elementText = $(element).find('p')[0];
-    self.elementButton = $(element).find('a')[0];
+    self.elementButton = $(element).find('.button')[0];
     self.onConfirm = function(){};
     self.show = function show(/*title, text*/) {
         //self.elementTitle.innerHTML = title;

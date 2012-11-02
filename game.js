@@ -9,6 +9,8 @@
 //(travel only warp's distance per turn) or to give klingons equivalent number 
 //of move turns (maybe also restrict them to 1 sector per turn)
 
+//better sanity checking for travel/torpedo coordinates, allow torpedos to explode in space.
+
 function Galaxy() {
     this.quadrants = new Array();
     this._klingons = 0; defineWatchableValue(this, 'klingons', '_klingons');
@@ -649,12 +651,15 @@ function Game(widgets) {
             } else {
                 self.klingonsMove();
                 self._quadrantChanged();
-                if(self.player.dead) {
-                    self._widgets['destroyed-message'].show();
-                    self._widgets['destroyed-message'].onConfirm = self.newGame;
-                }
             }
             self._updateDamage();
+            if(self.player.dead) {
+                self._widgets['destroyed-message'].show();
+                self._widgets['destroyed-message'].onConfirm = self.newGame;
+            } else if(self.time >= self.endTime) {
+                self._widgets['time-message'].show();
+                self._widgets['time-message'].onConfirm = self.newGame;
+            }
         });
         $('#launch-torpedo').click(function launchClicked() {
             if(self._widgets['srs'].getMarked() == undefined) {
