@@ -44,6 +44,14 @@
                     </tr>
                 </table>
             </section>
+            <section id='docking'>
+                <h1>Docking</h1>
+                <table>
+                    <tr><th class="column">Docking Hatch</th><td id="docked">Closed</td>
+                    <tr><th class="column">Emergency Repairs</th><td id="total-damage">0.0</td></tr>
+                </table>
+                <a class="button" id="do-repair" href="#">Authorize</a>
+            </section>
             <section id="helm">
                 <h1><span>Helm</span></h1>
                 <table>
@@ -77,9 +85,6 @@
                     <tr><th class="column">Starbases</th><td id="quadrant-bases">0</td><td id="total-bases">0</td></tr>
                     <!--tr><th class="column">Stars</th><td id="quadrant-stars">0</td><td id="total-stars">0</td></tr-->
                 </table>
-            </section>
-            <section>
-                <h1><span>Engineering</span></h1>
                 <table>
                     <tr>
                         <th class="column">Energy</th>
@@ -91,9 +96,12 @@
                         </td>
                     </tr>
                 </table>
+            </section>
+            <section id="damage-control">
+                <h1><span>Engineering</span></h1>
                 <table>
                     <tr><th>System</th><th>Repair Time</th></tr>
-                    <tr><th class="column">Warp Engines</th><td id="warp-damage">0.0</td></tr>
+                    <tr><th class="column">Warp Engines</th><td id="engine-damage">0.0</td></tr>
                     <tr><th class="column">Short Range Sensors</th><td id="srs-damage">0.0</td></tr>
                     <tr><th class="column">Long Range Sensors</th><td id="lrs-damage">0.0</td></tr>
                     <tr><th class="column">Phaser Control</th><td id="phaser-damage">0.0</td></tr>
@@ -101,9 +109,7 @@
                     <tr><th class="column">Damage Control</th><td id="damage-damage">0.0</td></tr>
                     <tr><th class="column">Shield Control</th><td id="shield-damage">0.0</td></tr>
                     <tr><th class="column">Library Computer</th><td id="library-damage">0.0</td></tr>
-                    <tr><th class="column">Total</th><td id="total-damage">0.0</td></tr>
                 </table>
-                <a class="button" id="do-repair">Repair All</a>            
             </section>
         </div>
         <section class="tabbed" id="astrometrics">
@@ -146,6 +152,7 @@
                     <tr><th>Pollux</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Spica</th></tr>
                     <tr><th>Fomalhaut</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Navi</th></tr>
                     <tr><th>Enath</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th>Kastra</th></tr>
+                    <tr><th>&nbsp;</th></tr>
                     <tr><th>&nbsp;</th></tr>
                 </table>
             </section>

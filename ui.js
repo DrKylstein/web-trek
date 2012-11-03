@@ -1,4 +1,13 @@
 function initializeWidgets() {
+    function blinkOn() {
+        $(".offline").addClass("blink")
+        setTimeout(blinkOff, 2000)
+    }
+    function blinkOff() {
+        $(".offline").removeClass("blink")
+        setTimeout(blinkOn, 1000)
+    }
+    blinkOn()
     var widgets = {};
     $('.slider').each(function(index) {
         widgets[this.id] = new Slider(this);
@@ -51,9 +60,26 @@ function defineWatchableValue(self, name, field) {
 }
 
 
-function Tabbed(element) {
+function Widget(element) {
     var self = this;
     self.elementRoot = element;
+    self._disabled = false;
+    self.__defineSetter__('disabled', function setDisabled(state) {
+        self._disabled = state;
+        if(state) {
+            $(self._elementRoot).addClass('disabled');
+        } else {
+            $(self._elementRoot).removeClass('disabled');
+        }
+    });
+    self.__defineGetter__('disabled', function getDisabled() {
+       return self._disabled; 
+    });
+}
+
+function Tabbed(element) {
+    var self = this;
+    Widget.call(this, element);
     self.tabs = $(self.elementRoot).find('> ol > li > a').get();
     self.pages = $(self.elementRoot).find('> section').get();
     self.changetab = function(index) {
@@ -74,7 +100,7 @@ function Tabbed(element) {
 
 function Slider(element) {
     var self = this;
-    self.elementRoot = element;
+    Widget.call(this, element);
     self.elementHandle = $(element).find('.handle')[0];
     self.elementLabel = $(element).find('.label')[0];
     var stepinfo = parseFloatPrecision($(element).attr('data-step'));
@@ -167,7 +193,7 @@ function Slider(element) {
 
 function BarGraph(element) {
     var self = this;
-    self.elementRoot = element;
+    Widget.call(this, element);
     self.elementBar = $(element).find('.bar')[0];
     self.elementLabel = $(element).find('.label')[0];
     var stepinfo = parseFloatPrecision($(element).attr('data-step'));
@@ -203,7 +229,7 @@ function BarGraph(element) {
 
 function SpinBox(element) {
     var self = this;
-    self.elementRoot = element;
+    Widget.call(this, element);
     self.elementPlus = $(element).find('.plus')[0];
     self.elementMinus = $(element).find('.minus')[0];
     self.elementLabel = $(element).find('.label')[0];
@@ -245,7 +271,7 @@ function SpinBox(element) {
 
 function Grid(element) {
     var self = this;
-    self.elementRoot = element;
+    Widget.call(this, element);
     self.cells = new Array();
     self._marked;
     self.cellClick = function defaultCellClick(x,y){};
@@ -287,14 +313,10 @@ function Grid(element) {
 }
 function MessageBox(element) {
     var self = this;
-    self.elementRoot = element;
-    //self.elementTitle = $(element).find('h1')[0];
-    //self.elementText = $(element).find('p')[0];
-    self.elementButton = $(element).find('.button')[0];
+    Widget.call(this, element);
+    self.elementButton = $(self.elementRoot).find('.button')[0];
     self.onConfirm = function(){};
-    self.show = function show(/*title, text*/) {
-        //self.elementTitle.innerHTML = title;
-        //self.elementText.innerHTML = text;
+    self.show = function show() {
         $(self.elementRoot).css('display', 'block');
     }
     self.hide = function hide() {
@@ -308,21 +330,21 @@ function MessageBox(element) {
 }
 function Button(element) {
     var self = this;
-    self._elementRoot = element;
+    Widget.call(this, element);
     self.onclick = function(){};
     self._disabled = false;
     self.__defineSetter__('disabled', function setDisabled(state) {
         self._disabled = state;
         if(state) {
-            $(self._elementRoot).addClass('disabled');
+            $(self.elementRoot).addClass('disabled');
         } else {
-            $(self._elementRoot).removeClass('disabled');
+            $(self.elementRoot).removeClass('disabled');
         }
     });
     self.__defineGetter__('disabled', function getDisabled() {
        return self._disabled; 
     });
-    $(self._elementRoot).click(function elementClicked(event) {
+    $(self.elementRoot).click(function elementClicked(event) {
         if(!self.disabled) {
             self.onclick();
         }

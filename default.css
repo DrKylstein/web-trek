@@ -154,6 +154,11 @@ section {
 }
 .button.disabled {
 	background: #444;
+	color: #000;
+}
+.disabled, .disabled th, .disabled h1 {
+	color: #444;
+	border-color: #444;
 }
 
 .command td:not(:last-child) {
@@ -194,6 +199,23 @@ section {
 .message-box p {
 	margin: 1em;
 }
+
+.offline {
+	background: #000;
+	border-color: #f00;
+}
+.blink.offline {
+	background: #800;
+	border-color: #fff;
+}
+
+.offline, .offline th, .offline h1 {
+	color: #f00;
+}
+.blink.offline, .blink.offline th, .blink.offline h1 {
+	color: #fff;
+}
+
 
 /* etc */
 

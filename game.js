@@ -182,7 +182,7 @@ function Starship(galaxy) {
     this._shields = 0;  defineWatchableValue(this, 'shields', '_shields');
     this._torpedos = _MAX_TORPEDOS; defineWatchableValue(this, 'torpedos', '_torpedos');
     this.dead = false;
-    this.damaged = {'engines':0, 'srs':0, 'lrs':0, 'phasers':0, 'torpedos':0, 'damage':0, 'shield':0, 'library':0}
+    this.damaged = {'engine':0, 'srs':0, 'lrs':0, 'phaser':0, 'torpedo':0, 'damage':0, 'shield':0, 'library':0}
     this._docked = false; defineWatchableValue(this, 'docked', '_docked');
     
     this.reset = function reset() {
@@ -269,7 +269,9 @@ function Starship(galaxy) {
         }
         this.handleDocking();
         var dt = this.travelTime(cost)
-        this.repair(dt);
+        if(!this.damaged['damage']) {
+            this.repair(dt);
+        }
         return dt;
     };
     
@@ -345,7 +347,7 @@ function Starship(galaxy) {
         var keys = Object.keys(this.damaged);
         var dt = this.fullRepairTime();
         for(var k in keys) {
-            this.damaged[k] = 0;
+            this.damaged[keys[k]] = 0;
         }
         return dt;
     }
@@ -551,12 +553,25 @@ function Game(widgets) {
     
     this._updateDamage = function _updateDamage() {
         var keys = Object.keys(self.player.damaged);
-        for(k in keys) {
-            if(self.player.damaged['damage'] > 0) {
+        var total = 0;
+        if(self.player.damaged['damage'] > 0) {
+            $('#damage-control').addClass('offline');
+            for(k in keys) {
                 $('#'+keys[k]+'-damage').html('???');
-            } else {
-                $('#'+keys[k]+'-damage').html((self.player.damaged[keys[k]]/10).toFixed(1));
+                total += self.player.damaged[keys[k]];
             }
+            if(self.player.docked) {
+                $('#total-damage').html((total/10).toFixed(1));
+            } else {
+                $('#total-damage').html('???');
+            }
+        } else {
+            $('#damage-control').removeClass('offline');
+            for(k in keys) {
+                $('#'+keys[k]+'-damage').html((self.player.damaged[keys[k]]/10).toFixed(1));
+                total += self.player.damaged[keys[k]];
+            }
+            $('#total-damage').html((total/10).toFixed(1));
         }
     }
     
@@ -633,6 +648,7 @@ function Game(widgets) {
         self._quadrantChanged();
         self._updateDamage();
         self.checkDead();
+        self._widgets['do-repair'].disabled = true;
     }
     this.playerMove = function playerMove() {
         var newQuad = false;
@@ -718,7 +734,19 @@ function Game(widgets) {
         }
         
         self.player.dockedChanged = function dockedChanged(state) {
-            self._widgets['do-repair'].disabled = !(state && self.player.damaged['damage'] > 0);
+            if(state) {
+                $('#docking').removeClass('disabled');
+                $('#docked').html('engaged');
+                if(self.player.damaged['damage'] > 0) {
+                    self._widgets['do-repair'].disabled = false;
+                } else {
+                    self._widgets['do-repair'].disabled = true;
+                }
+            } else {
+                $('#docking').addClass('disabled');
+                $('#docked').html('closed');
+                self._widgets['do-repair'].disabled = true;
+            }
         }
         
         self._widgets['srs'].cellClick = function(x,y) {
@@ -787,7 +815,6 @@ function Game(widgets) {
     };
     this._initWidgets();
     this.newGame = function() {
-        //self._widgets['start-message'].show();
         self.galaxy.generate();
         self.player.reset();
         self.endTime = self.time + ((25 + random.range(1,11)) * 10); //decimal fixed point n.1
