@@ -33,7 +33,7 @@
                     <tr>
                         <th class="column">Phasers</th>
                         <td>
-                            <div data-step=1 data-min=0 data-max=3000 data-value=0 id="phasers" class="slider horizontal">
+                            <div data-step=1 data-min=1 data-max=1000 data-value=300 id="phasers" class="slider horizontal">
                                 <div class="handle"></div>
                                 <div class="label">0</div>
                             </div>
@@ -58,7 +58,7 @@
                     </tr> 
                     <tr><th class="column">ETA</th><td id="eta">0</td></tr> 
                 </table>
-                <a id="engage" href="#" class="button disabled">Engage</a>
+                <a id="engage" href="#" class="button">Engage</a>
             </section>
         </div>
         <div id="reports">
@@ -93,15 +93,17 @@
                 </table>
                 <table>
                     <tr><th>System</th><th>Repair Time</th></tr>
-                    <tr><th class="column">Warp Engines</th><td id="warp-damage">0</td></tr>
-                    <tr><th class="column">Short Range Sensors</th><td id="srs-damage">0</td></tr>
-                    <tr><th class="column">Long Range Sensors</th><td id="lrs-damage">0</td></tr>
-                    <tr><th class="column">Phaser Control</th><td id="phaser-damage">0</td></tr>
-                    <tr><th class="column">Photon Tubes</th><td id="torpedo-damage">0</td></tr>
-                    <tr><th class="column">Damage Control</th><td id="damage-damage">0</td></tr>
-                    <tr><th class="column">Shield Control</th><td id="shield-damage">0</td></tr>
-                    <tr><th class="column">Library Computer</th><td id="library-damage">0</td></tr>
+                    <tr><th class="column">Warp Engines</th><td id="warp-damage">0.0</td></tr>
+                    <tr><th class="column">Short Range Sensors</th><td id="srs-damage">0.0</td></tr>
+                    <tr><th class="column">Long Range Sensors</th><td id="lrs-damage">0.0</td></tr>
+                    <tr><th class="column">Phaser Control</th><td id="phaser-damage">0.0</td></tr>
+                    <tr><th class="column">Photon Tubes</th><td id="torpedo-damage">0.0</td></tr>
+                    <tr><th class="column">Damage Control</th><td id="damage-damage">0.0</td></tr>
+                    <tr><th class="column">Shield Control</th><td id="shield-damage">0.0</td></tr>
+                    <tr><th class="column">Library Computer</th><td id="library-damage">0.0</td></tr>
+                    <tr><th class="column">Total</th><td id="total-damage">0.0</td></tr>
                 </table>
+                <a class="button" id="do-repair">Repair All</a>            
             </section>
         </div>
         <section class="tabbed" id="astrometrics">

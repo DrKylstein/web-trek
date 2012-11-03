@@ -18,6 +18,9 @@ function initializeWidgets() {
     $('.message-box').each(function(index) {
         widgets[this.id] = new MessageBox(this);
     });
+    $('.button').each(function(index) {
+        widgets[this.id] = new Button(this);
+    });
     return widgets;
 }
 
@@ -302,4 +305,26 @@ function MessageBox(element) {
         self.onConfirm();
     });
     self.hide();
+}
+function Button(element) {
+    var self = this;
+    self._elementRoot = element;
+    self.onclick = function(){};
+    self._disabled = false;
+    self.__defineSetter__('disabled', function setDisabled(state) {
+        self._disabled = state;
+        if(state) {
+            $(self._elementRoot).addClass('disabled');
+        } else {
+            $(self._elementRoot).removeClass('disabled');
+        }
+    });
+    self.__defineGetter__('disabled', function getDisabled() {
+       return self._disabled; 
+    });
+    $(self._elementRoot).click(function elementClicked(event) {
+        if(!self.disabled) {
+            self.onclick();
+        }
+    });
 }

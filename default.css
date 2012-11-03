@@ -87,6 +87,7 @@ section {
 	overflow: hidden;
 	cursor: pointer;
 	margin: auto;
+	border: 0.1em solid #3079f9;
 }
 .slider.vertical, .bargraph.vertical {
 	height: 5em;
@@ -151,6 +152,9 @@ section {
 	text-align: center;
 	border-radius: 0.5em;
 }
+.button.disabled {
+	background: #444;
+}
 
 .command td:not(:last-child) {
 	width: 2.5em;
@@ -185,6 +189,7 @@ section {
 	right: 0em;
 	bottom: 0em;
 	padding: 0.5em;
+	border-radius: 1em;	
 }
 .message-box p {
 	margin: 1em;

@@ -130,6 +130,9 @@ function Quadrant(galaxy, x, y, ships) {
     };
     var info = this._galaxy.quadrantInfo(this.x, this.y);
     this.generate(info.klingons, info.starbases, info.stars);
+    this.raycast = function raycast(pos1, pos2) {
+        
+    }
 }
 
 function Starchart(w,h) {
@@ -166,30 +169,34 @@ function Starchart(w,h) {
 }
 
 function Starship(galaxy) {
+    var _MAX_ENERGY = 3000;
+    var _MAX_TORPEDOS = 10;
+    
     this.category = 'starship';
     this._galaxy = galaxy;
     this.starchart = new Starchart(10,10);
     this._x = 0; defineWatchableValue(this, 'x', '_x');
     this._y = 0; defineWatchableValue(this, 'y', '_y');
     this.quadrant = this._galaxy.getQuadrant(0, 0);
-    this._energy = 3000; defineWatchableValue(this, 'energy', '_energy');
+    this._energy = _MAX_ENERGY; defineWatchableValue(this, 'energy', '_energy');
     this._shields = 0;  defineWatchableValue(this, 'shields', '_shields');
-    this._torpedos = 10; defineWatchableValue(this, 'torpedos', '_torpedos');
+    this._torpedos = _MAX_TORPEDOS; defineWatchableValue(this, 'torpedos', '_torpedos');
     this.dead = false;
     this.damaged = {'engines':0, 'srs':0, 'lrs':0, 'phasers':0, 'torpedos':0, 'damage':0, 'shield':0, 'library':0}
+    this._docked = false; defineWatchableValue(this, 'docked', '_docked');
     
     this.reset = function reset() {
         this.x = random.range(10);
         this.y = random.range(10);
         this.shields = 0;
-        this.phasers = 0;
-        this.warpFactor = 1;
-        this.energy = 3000;
-        this.torpedos = 10;
+        this.energy = _MAX_ENERGY;
+        this.torpedos = _MAX_TORPEDOS;
         this.dead = false;
         this.quadrant = this._galaxy.getQuadrant(random.range(10), random.range(10), [this])
         this.starchart.clear();
         this.starchart.update(this._galaxy, [this.quadrant.x, this.quadrant.y]);
+        this.docked = false;
+        this.fullRepair();
     }
         
     this.shieldControl = function shieldControl(newvalue){
@@ -214,17 +221,44 @@ function Starship(galaxy) {
         return Math.min(cost, 10);
     }
     
-    this.move = function move(dest, qDest) {
+    this.handleDocking = function handleDocking() {
+        this._docked = false;
+        for(var i in this.quadrant.things) {
+            if(this.quadrant.things[i].category == 'starbase') {
+                if(Math.abs(this.quadrant.things[i].x - this.x) <= 1 &&
+                Math.abs(this.quadrant.things[i].y - this.y) <= 1) {
+                    this._docked = true;
+                    this.energy = _MAX_ENERGY;
+                    this.torpedos = _MAX_TORPEDOS;
+                    this.shields = 0;
+                }
+            }
+        }
+        this.dockedChanged(this._docked);
+    }
+    
+    this.canMove = function canMove(dest, qDest) {
+        if(dest[0] == this.x && dest[1] == this.y && qDest[0] == this.quadrant.x && qDest[1] == this.quadrant.y) {
+            return false;
+        }
         var cost = this.travelCost(dest, qDest);
         if(this.energy - cost < 0) {
-            return 0;
+            return false;
         }
         if(this.shields > 0 && cost > 1) {
-            return 0; //cannot exceed warp 0.1 with shields up
+            return false; //cannot exceed warp 0.1 with shields up
         }
         if(this.damaged['engines'] && cost > 2) {
-            return 0; //cannot exceed warp 0.2 when engines are damaged
+            return false; //cannot exceed warp 0.2 when engines are damaged
         }
+        return true;
+    }
+    
+    this.move = function move(dest, qDest) {
+        if(!this.canMove(dest, qDest)) {
+            return 0;
+        }
+        var cost = this.travelCost(dest, qDest);
 
         this.energy -= cost;
         this.x = dest[0];
@@ -233,7 +267,10 @@ function Starship(galaxy) {
             this.quadrant = this._galaxy.getQuadrant(qDest[0], qDest[1], [this]);
             this.starchart.update(this._galaxy, [this.quadrant.x, this.quadrant.y]);
         }
-        return this.travelTime(cost);
+        this.handleDocking();
+        var dt = this.travelTime(cost)
+        this.repair(dt);
+        return dt;
     };
     
     this.launchTorpedo = function launchTorpedo(x,y) {
@@ -266,6 +303,9 @@ function Starship(galaxy) {
     }
     
     this.damage = function damage(amount) {
+        if(this.docked) {
+            return 0;
+        }
         this.shields -= amount;
         if(amount > 20 && Math.random() <= 0.6 && amount / this.shields > 0.2) {
             var system = random.choice(Object.keys(this.damaged));
@@ -274,21 +314,40 @@ function Starship(galaxy) {
         if(this.shields < 0) {
             this.dead = true;
         }
+        return amount;
     }
     
     this.repair = function(dt) {
         var keys = Object.keys(this.damaged);
         for(var k in keys) {
-            if(this.damaged[k] > 0) {
-                this.damaged[k] -= dt;
-                if(this.damaged[k] < 1 && this.damaged[k] > 0) {
-                    this.damaged[k] = 1;
+            if(this.damaged[keys[k]] > 0) {
+                this.damaged[keys[k]] -= dt;
+                if(this.damaged[keys[k]] < 1 && this.damaged[keys[k]] > 0) {
+                    this.damaged[keys[k]] = 1;
                 }
-                if(this.damaged[k] < 0) {
-                    this.damaged[k] = 0;
+                if(this.damaged[keys[k]] < 0) {
+                    this.damaged[keys[k]] = 0;
                 }
             }
         }
+    }
+    
+    this.fullRepairTime = function fullRepairTime() {
+        var keys = Object.keys(this.damaged);
+        var dt = 0;
+        for(var k in keys) {
+            dt += this.damaged[keys[k]];
+        }
+        return dt;
+    }
+    
+    this.fullRepair = function fullRepair() {
+        var keys = Object.keys(this.damaged);
+        var dt = this.fullRepairTime();
+        for(var k in keys) {
+            this.damaged[k] = 0;
+        }
+        return dt;
     }
     
     this.longRangeSensors = function longRangeSensors() {
@@ -311,7 +370,7 @@ function Klingon(x,y, quadrant) {
     this.category = 'klingon'
     this.x = x;
     this.y = y;
-    this.shields = 100+random.range(200);
+    this.shields = 100+random.range(201);
     this.quadrant = quadrant;
     this.move = function move() {
         var destination = random.choice(this.quadrant.emptySpots());
@@ -361,7 +420,7 @@ function Star(x,y, quadrant) {
 //classic names: aaaabccdpprrsssv
 //unused letters: efghijklmnoqtuwxyz
 //new names: efnk
-var starNames = new Array(
+/* var starNames = new Array(
     'Antares','Sirius',
     'Rigel','Deneb',
     'Procyon','Capella',
@@ -380,7 +439,7 @@ function quadrantName(q) {
     var numeralIndex = (q[0] + (q[1] * 10)) % 5;
     return starNames[nameIndex]+' '+numerals[numeralIndex];
 }
-
+ */
 function ScannerDisplay(widget, player) {
     var self = this;
     this._widget = widget;
@@ -493,11 +552,16 @@ function Game(widgets) {
     this._updateDamage = function _updateDamage() {
         var keys = Object.keys(self.player.damaged);
         for(k in keys) {
-            $('#'+k+'-damage').html((self.player.damaged[k]/10).toFixed(1));
+            if(self.player.damaged['damage'] > 0) {
+                $('#'+keys[k]+'-damage').html('???');
+            } else {
+                $('#'+keys[k]+'-damage').html((self.player.damaged[keys[k]]/10).toFixed(1));
+            }
         }
     }
     
     this._updateWarp = function _updateWarp(value) {
+        self._widgets['engage'].disabled = !self.player.canMove(self.ds, self.dq);
         var cost = self.player.travelCost(self.ds, self.dq);
         var travelTime = self.player.travelTime(cost);
         if(travelTime > 0) {
@@ -528,8 +592,8 @@ function Game(widgets) {
     }
     this._newQuadrant = function _newQuadrant() {
         self._quadrantChanged();
-        $('#quadrant-name').html(quadrantName([self.player.quadrant.x, self.player.quadrant.y]));
-        $('#quadrant').html('('+self.player.quadrant.x+','+self.player.quadrant.y+')');
+        //$('#quadrant-name').html(quadrantName([self.player.quadrant.x, self.player.quadrant.y]));
+        //$('#quadrant').html('('+self.player.quadrant.x+','+self.player.quadrant.y+')');
     }
     
     this.klingonsMove = function klingonsMove() {
@@ -550,6 +614,79 @@ function Game(widgets) {
         }
     }
     
+    this.checkDead = function checkDead() {
+        if(self.player.dead) {
+            self._widgets['destroyed-message'].show();
+            self._widgets['destroyed-message'].onConfirm = self.newGame;
+        } else if(self.time >= self.endTime) {
+            self._widgets['time-message'].show();
+            self._widgets['time-message'].onConfirm = self.newGame;
+        }
+    }
+    this.doDockedRepairs = function doDockedRepairs() {
+        if(!self.player.docked) {
+            return;
+        }
+        var dt = self.player.fullRepair();
+        self.time += dt;
+        self.klingonsMove();
+        self._quadrantChanged();
+        self._updateDamage();
+        self.checkDead();
+    }
+    this.playerMove = function playerMove() {
+        var newQuad = false;
+        if(self.dq[0] != self.player.quadrant.x || self.dq[1] != self.player.quadrant.y) {
+            newQuad = true;
+        }
+        if(self.ds[0] == self.player.x && self.ds[1] == self.player.y && !newQuad) {
+            return false;
+        }
+        if(self.player.travelCost(self.ds, self.dq) > self.player.energy) {
+            return false;
+        }
+        var dt = self.player.move(self.ds, self.dq);
+        if(dt <= 0) {
+            return false;
+        }
+        self.time += dt;
+        if(newQuad) {
+            self._newQuadrant();
+        } else {
+            self.klingonsMove();
+            self._quadrantChanged();
+        }
+        self._updateDamage();
+        self.checkDead();
+    };
+       
+    this.checkTorpedo = function checkTorpedo() {
+        if(self.player.torpedos > 0 && self._widgets['srs'].getMarked() != undefined) {
+            self._widgets['launch-torpedo'].disabled = false;
+        } else {
+            self._widgets['launch-torpedo'].disabled = true;
+        }
+    }
+    
+    this.launchTorpedo =  function launchTorpedo() {
+        if(self._widgets['srs'].getMarked() == undefined) {
+            return;
+        }
+        self.player.launchTorpedo(self._widgets['srs'].getMarked()[0], self._widgets['srs'].getMarked()[1]);
+        self.klingonsShoot();
+        self._quadrantChanged();
+        self._updateDamage();
+        self.checkDead();
+    };
+    
+    this.firePhasers = function firePhasers() {
+        self.player.firePhasers(self._widgets['phasers'].value());
+        self.klingonsShoot();
+        self._quadrantChanged();
+        self._updateDamage();
+        self.checkDead();
+    }
+
     this._initWidgets = function() {
         
         this.timeChanged = function timeChanged(value) {
@@ -561,6 +698,7 @@ function Game(widgets) {
                 
         self._widgets['shields'].onchange = function shieldsSliderChanged(value){
             self.player.shieldControl(value);
+            self._updateWarp();
         };
         self.player.shieldsChanged = self._widgets['shields'].setValue;
         function updatePhasers(value) {
@@ -575,9 +713,13 @@ function Game(widgets) {
             self._updateWarp();
         }
         self.player.torpedosChanged = function updateTorpedos(value) {
-            $("#torpedo-count").html(self.player.torpedos)
+            $("#torpedo-count").html(self.player.torpedos);
+            self.checkTorpedo();
         }
         
+        self.player.dockedChanged = function dockedChanged(state) {
+            self._widgets['do-repair'].disabled = !(state && self.player.damaged['damage'] > 0);
+        }
         
         self._widgets['srs'].cellClick = function(x,y) {
             self.ds = [x, y];
@@ -586,6 +728,7 @@ function Game(widgets) {
             self._widgets['starchart'].clearMark();
             self._scan.clearNeighborMark();
             self._updateWarp();
+            self.checkTorpedo();
         };
         
         function selectQuadrant(x,y) {
@@ -610,6 +753,7 @@ function Game(widgets) {
             vec = normalizeManhattan(vec);
             self._scan.markNeighbor(vec);
             self._updateWarp();
+            self.checkTorpedo();
         };
         self._scan.neighborClicked = function neighborClicked(dx,dy) {
             selectQuadrant(self.player.quadrant.x+dx, self.player.quadrant.y+dy);
@@ -633,62 +777,11 @@ function Game(widgets) {
             $('#total-stars').html(value);
         }
         
-        
-        $('#engage').click(function engageClicked() {
-            var newQuad = false;
-            if(self.dq[0] != self.player.quadrant.x || self.dq[1] != self.player.quadrant.y) {
-                newQuad = true;
-            }
-            if(self.ds[0] == self.player.x && self.ds[1] == self.player.y && !newQuad) {
-                return;
-            }
-            if(self.player.travelCost(self.ds, self.dq) > self.player.energy) {
-                return;
-            }
-            var dt = self.player.move(self.ds, self.dq);
-            if(dt <= 0) {
-                return;
-            }
-            self.time += dt;
-            if(newQuad) {
-                self._newQuadrant();
-            } else {
-                self.klingonsMove();
-                self._quadrantChanged();
-            }
-            self._updateDamage();
-            if(self.player.dead) {
-                self._widgets['destroyed-message'].show();
-                self._widgets['destroyed-message'].onConfirm = self.newGame;
-            } else if(self.time >= self.endTime) {
-                self._widgets['time-message'].show();
-                self._widgets['time-message'].onConfirm = self.newGame;
-            }
-        });
-        $('#launch-torpedo').click(function launchClicked() {
-            if(self._widgets['srs'].getMarked() == undefined) {
-                return;
-            }
-            self.player.launchTorpedo(self._widgets['srs'].getMarked()[0], self._widgets['srs'].getMarked()[1]);
-            self.klingonsShoot();
-            self._quadrantChanged();
-            self._updateDamage();
-            if(self.player.dead) {
-                self._widgets['destroyed-message'].show();
-                self._widgets['destroyed-message'].onConfirm = self.newGame;
-            }
-        });
-        $('#fire-phasers').click(function fireClicked() {
-            self.player.firePhasers(self._widgets['phasers'].value());
-            self.klingonsShoot();
-            self._quadrantChanged();
-            self._updateDamage();
-            if(self.player.dead) {
-                self._widgets['destroyed-message'].show();
-                self._widgets['destroyed-message'].onConfirm = self.newGame;
-            }
-        });
-                
+        self._widgets['engage'].onclick = self.playerMove;
+        self._widgets['launch-torpedo'].onclick = self.launchTorpedo;
+        self._widgets['fire-phasers'].onclick = self.firePhasers;
+        self._widgets['do-repair'].onclick = self.doDockedRepairs;
+
         //is there a better place?
         this.time = ((random.range(1,21) + 20) * 100) * 10; //decimal fixed point n.1
     };
