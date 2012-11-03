@@ -1,0 +1,16 @@
+Web Trek 
+(C) 2012 Kyle Delaney
+Free software under the terms of the BSD Two-Clause license, see COPYING for 
+details.
+
+A free web-based implementation of the classic Star Trek-inspired Basic game.
+
+I refered to the following for gameplay details:
+* Super Star Trek (C) David Ahl 1978
+* Super Star Trek Classic (v1.1) (C) 1996 Chris Nystrom
+
+Notes:
+* Damage effects are not currently implemented for anything but engines and the
+  Engineering department.
+* The win condition is not yet recognized, but you'll know when you hit 0 
+  klingons.
