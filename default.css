@@ -62,8 +62,6 @@ section {
 }
 .tabbed > ol > li > a {
 	color: #888;
-	border-left: 0.2em solid #000;
-	border-right: 0.2em solid #000;
 }
 .tabbed > ol .active {
 	color: inherit;
@@ -73,13 +71,6 @@ section {
 }
 .tabbed > section.active {
 	display: block;
-}
-
-.summary {
-	width: 5em;
-}
-.summary td {
-	width: 2em;
 }
 
 .slider, .bargraph {
@@ -135,7 +126,7 @@ section {
 	border-right: 0.125em solid #3079f9;
 }
 
-.bargraph .bar {
+.bar {
 	position: absolute;
 	right: 0em;
 	bottom: 0em;
@@ -199,23 +190,57 @@ section {
 .message-box p {
 	margin: 1em;
 }
-
-.offline {
-	background: #000;
+/* offline */
+.offline, .offline section, .offline .grid .cell, .offline .slider, .offline .bargraph {
+	background: transparent;
 	border-color: #f00;
 }
-.blink.offline {
-	background: #800;
+.blink.offline, .offline.blink section, .offline.blink .grid .cell, .offline.blink .slider, .offline.blink .bargraph {
+	background: #400;
 	border-color: #fff;
 }
-
-.offline, .offline th, .offline h1 {
-	color: #f00;
+.offline .button, .offline .bar, .offline .horizontal .bar, .offline .vertical .bar {
+	background: #f00;
+	color: #000;
+	border-right-color: #fff;
 }
-.blink.offline, .blink.offline th, .blink.offline h1 {
+.offline.blink .button, .offline.blink .bar {
+	background: #fff;
+	color: #400;
+}
+.offline .button.disabled, .offline.disabled .button {
+	background: #400;
+	color: #000;
+}
+.offline.blink .button.disabled, .offline.disabled.blink .button {
+	background: transparent;
+	color: #000;
+}
+.offline .bargraph .label {
 	color: #fff;
 }
-
+.offline.blink .bargraph .label {
+	color: #000;
+}
+.offline .slider .label {
+	color: #f00;
+}
+.offline.blink .slider .label {
+	color: #fff;
+}
+.offline .disabled, .offline .tabbed > ol a {
+	color: #400;
+}
+.offline.blink .disabled, .offline.blink .tabbed > ol a {
+	color: #000;
+}
+.offline, .offline th, .offline h1, .offline .tabbed > ol a.active {
+	color: #f00;
+}
+.blink.offline, .blink.offline th, .blink.offline h1, .offline.blink .tabbed > ol a.active {
+	color: #fff;
+}
+/* /offline */
 
 /* etc */
 
@@ -287,10 +312,24 @@ section:last-child {
 td > .slider, td > .bargraph {
 	float: right;
 }
-
+.red-alert {
+	background: #200;
+}
+.red {
+	color: #cf3c8b;
+}
+.green {
+	color: #3ccf8b;
+}
+.yellow {
+	color: #cfcf3c;
+}
 .starbase, .starship {
-	color: #FF3;
+	color: #3ccf8b;
 }
 .klingon {
-	color: #F00;
+	color: #cf3c8b;
+}
+.star {
+	color: #fff;
 }

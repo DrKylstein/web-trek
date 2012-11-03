@@ -587,23 +587,40 @@ function Game(widgets) {
         $('#travel-energy').html(cost);
     }
 
+    this.updateCondition = function updateCondition() {
+        var lrs = self.player.longRangeSensors();
+        if(lrs[1][1].klingons > 0) {
+            $('#condition').html('Red');
+            $('body').addClass('red-alert');
+            $('#condition').removeClass('green');
+            $('#condition').removeClass('yellow');
+            $('#condition').addClass('red');
+        } else if(self.player.energy < 300) {
+            $('#condition').html('Yellow');
+            $('body').removeClass('red-alert');
+            $('#condition').removeClass('green');
+            $('#condition').addClass('yellow');
+            $('#condition').removeClass('red');
+        } else {
+            $('#condition').html('Green');
+            $('body').removeClass('red-alert');
+            $('#condition').addClass('green');
+            $('#condition').removeClass('yellow');
+            $('#condition').removeClass('red');
+        }
+    }
+    
     this._quadrantChanged = function _quadrantChanged() {
         self._scan.update();
         self._chart.update();
         var lrs = self.player.longRangeSensors();
         $('#quadrant-klingons').html(lrs[1][1].klingons)
         $('#quadrant-bases').html(lrs[1][1].starbases)
-        if(lrs[1][1].klingons > 0) {
-            $("#condition").html('Red');
-        } else if(self.player.energy < 300) {
-            $("#condition").html('Yellow');
-        } else {
-            $("#condition").html('Green');
-        }
         self._widgets['srs'].clearMark();
         self._widgets['starchart'].clearMark();
         self._scan.clearNeighborMark();
         self._updateWarp();
+        self.updateCondition();
     }
     this._newQuadrant = function _newQuadrant() {
         self._quadrantChanged();
@@ -716,7 +733,10 @@ function Game(widgets) {
             self.player.shieldControl(value);
             self._updateWarp();
         };
-        self.player.shieldsChanged = self._widgets['shields'].setValue;
+        self.player.shieldsChanged = function shieldsChanged(value) {
+            self._widgets['shields'].setValue(value);
+            self.updateCondition();
+        }
         function updatePhasers(value) {
             if(self._widgets['phasers'].value() > self.player.energy) {
                 self._widgets['phasers'].setValue(self.player.energy);
