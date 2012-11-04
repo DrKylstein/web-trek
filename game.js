@@ -102,14 +102,7 @@ function Quadrant(galaxy, pos, size, ships) {
         var freeCells = new Array();
         for(var x=0;x<this.width;++x) {
             for(var y=0;y<this.height;++y) {
-                occupied = false;
-                for(i in self.things) {
-                    if(self.things[i].x == x || self.things[i].y == y) {
-                        occupied = true;
-                        break;
-                    }
-                }
-                if(occupied) {
+                if(this.sectorContents(x, y)) {
                     continue;
                 }
                 freeCells.push([x,y]);
