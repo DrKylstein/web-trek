@@ -24,6 +24,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 /*
+overlap bug spotted again.
+
 -clearer starchart display
 -add additional system damage effects
 -torpedo blast radius to discourage overuse?
@@ -304,6 +306,16 @@ function Starship(galaxy) {
         this.dockedChanged(this._docked);
     }
     
+    this.maxRange = function maxRange() {
+        if(this.shields > 0) {
+            return 1; //cannot exceed warp 0.1 with shields up
+        }
+        if(this.damaged['engines']) {
+            return 2; //cannot exceed warp 0.2 when engines are damaged
+        }
+        return Math.min(this.energy, 101);
+    }
+    
     this.canMove = function canMove(dest, qDest) {
         if(dest[0] == this.x && dest[1] == this.y && qDest[0] == this.quadrant.x && qDest[1] == this.quadrant.y) {
             return false;
@@ -312,12 +324,10 @@ function Starship(galaxy) {
         if(this.energy - cost < 0) {
             return false;
         }
-        if(this.shields > 0 && cost > 1) {
-            return false; //cannot exceed warp 0.1 with shields up
+        if(cost > this.maxRange()) {
+            return false;
         }
-        if(this.damaged['engines'] && cost > 2) {
-            return false; //cannot exceed warp 0.2 when engines are damaged
-        }
+
         return true;
     }
     
@@ -667,6 +677,7 @@ function Game(widgets) {
         } else {
             self._widgets['engage'].disabled = true;
         }
+        $('#range').html((self.player.maxRange()/10).toFixed(1));
         var cost = self.player.travelCost(self.ds, self.dq);
         var travelTime = self.player.travelTime(cost);
         if(travelTime > 0) {
