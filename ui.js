@@ -105,7 +105,7 @@ function Widget(element) {
 function Tabbed(element) {
     var self = this;
     Widget.call(this, element);
-    self.tabs = $(self.elementRoot).find('> ol > li > a').get();
+    self.tabs = $(self.elementRoot).find('> ol > li').get();
     self.pages = $(self.elementRoot).find('> section').get();
     self.changetab = function(index) {
         $(self.tabs).each(function (index) {
@@ -301,6 +301,7 @@ function Grid(element) {
     self._marked;
     self.cellClick = function defaultCellClick(x,y){};
     self._handleCellClick = function _handleCellClick(x,y) {
+        event.preventDefault();
         self.cellClick(x,y);
     };
     var x=0,
@@ -370,6 +371,7 @@ function Button(element) {
        return self._disabled; 
     });
     $(self.elementRoot).click(function elementClicked(event) {
+        event.preventDefault();
         if(!self.disabled) {
             self.onclick();
         }

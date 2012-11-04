@@ -496,7 +496,7 @@ function Star(x,y, quadrant) {
 //classic names: aaaabccdpprrsssv
 //unused letters: efghijklmnoqtuwxyz
 //new names: efnk
-/* var starNames = new Array(
+var starNames = new Array(
     'Antares','Sirius',
     'Rigel','Deneb',
     'Procyon','Capella',
@@ -515,7 +515,7 @@ function quadrantName(q) {
     var numeralIndex = (q[0] + (q[1] * 10)) % 5;
     return starNames[nameIndex]+' '+numerals[numeralIndex];
 }
- */
+
 function ScannerDisplay(widget, player) {
     var self = this;
     this._widget = widget;
@@ -708,8 +708,8 @@ function Game(widgets) {
         self._scan.update();
         self._chart.update();
         var lrs = self.player.longRangeSensors();
-        $('#quadrant-klingons').html(lrs[1][1].klingons)
-        $('#quadrant-bases').html(lrs[1][1].starbases)
+        //$('#quadrant-klingons').html(lrs[1][1].klingons)
+        //$('#quadrant-bases').html(lrs[1][1].starbases)
         self._widgets['srs'].clearMark();
         self._widgets['starchart'].clearMark();
         self._scan.clearNeighborMark();
@@ -718,7 +718,13 @@ function Game(widgets) {
     }
     this._newQuadrant = function _newQuadrant() {
         self._quadrantChanged();
-        //$('#quadrant-name').html(quadrantName([self.player.quadrant.x, self.player.quadrant.y]));
+        function zeroPad(n) {
+            if(n > 9) {
+                return n.toString();
+            }
+            return '0'+n;
+        }
+        $('#position').html(quadrantName([self.player.quadrant.x, self.player.quadrant.y]) + ' ('+zeroPad(self.player.x+1)+', '+zeroPad(self.player.y+1)+')');
         //$('#quadrant').html('('+self.player.quadrant.x+','+self.player.quadrant.y+')');
     }
     

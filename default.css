@@ -48,7 +48,6 @@ menu,
 nav,
 section {
 	display: block;
-	overflow: hidden;
 }
 
 /* GUI */
@@ -62,11 +61,13 @@ section {
 	background: #102973;
 	width: 2em;
 	height: 2em;
+	cursor: pointer;
 }
 .grid .adjacent-summary {
 	padding: 0em;
 	width: 2em;
 	height: 2em;
+	cursor: pointer;
 }
 .grid {
 	border-collapse: collapse;
@@ -79,14 +80,13 @@ section {
 }
 .tabbed > ol {
 	overflow: hidden;
-	padding-left: 2em;
 }
 .tabbed > ol > li {
 	float: left;
 	width: 5em;
 }
-.tabbed > ol > li > a {
-	color: #888;
+.tabbed > ol > li {
+	color: #3079f9;
 }
 .tabbed > ol .active {
 	color: inherit;
@@ -167,19 +167,16 @@ section {
 	width: 4em;
 	text-align: center;
 	border-radius: 0.5em;
+	cursor: pointer;
 }
 .button.disabled {
 	background: #444;
 	color: #000;
+	cursor: default;
 }
-.disabled, .disabled th, .disabled h1 {
+.disabled, .disabled th, .disabled h1, .disabled th.column {
 	color: #444;
-	border-color: #444;
-}
-
-.command td:not(:last-child) {
-	width: 2.5em;
-	text-align: center;
+	/*border-color: #444;*/
 }
 
 .spinbox {
@@ -272,32 +269,23 @@ section {
 body {
     font-size: 150%;
     background: #000;
-	color: #fff;
+	color: #00d6f7;
     font-family: LCARS, Impact;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 0em;
     margin: 0em;
 }
-h1, .tabbed > ol {
-	color: #00d6f7;	
-	font-size: 125%;
-	padding: 0em;
-	margin-bottom: 0.2em;
-	text-align: center;
-}
 th {
 	text-align: center;
-	color: #3ccf8b;
+	color: #3079f9;
 }
 td {
 	text-align: right;
-	/*background: #ffc;
-	color: #000;*/
 }
 th.column {
 	text-align: left;
-	color: #00d6f7;
+	color: #3ccf8b;
 }
 table {
 	width: 100%;
@@ -306,35 +294,40 @@ table {
 }
 section {
 	border: 0.5em solid #3079f9;
-	margin: 0.5em;
-	padding: 0.5em;
+	margin: 0.25em;
+	padding: 0.25em;
+	margin-bottom: -0.5em;
+	margin-top: 0em;
 }
 section:first-child {
+	margin-top: 0.25em;
 	border-top-left-radius: 1em;
 	border-top-right-radius: 1em;
 }
 section:last-child {
+	margin-bottom: 0.25em;
 	border-bottom-left-radius: 1em;
 	border-bottom-right-radius: 1em;
 }
 .tabbed > section {
+	margin: 0.25em;
 	border-radius: 1em;
 }
-#command {
-	float: right;
-}
-#reports {
-	float: left;
-}
-#astrometrics {
-	overflow: hidden;
-	padding: 0.5em;
-	border: none;
-	margin: 0em;
-}
-#torpedo-count {
+h1, .tabbed > ol {
+	font-size: 125%;
 	text-align: center;
 }
+.tabbed > ol {
+	position: absolute;
+	bottom: 0em;
+}
+section, .tabbed {
+	position: relative;
+}
+.tabbed > section {
+	margin-bottom: 1.75em;
+}
+
 td > .slider, td > .bargraph {
 	float: right;
 }
@@ -358,4 +351,28 @@ td > .slider, td > .bargraph {
 }
 .star {
 	color: #fff;
+}
+
+#torpedo-count {
+	text-align: center;
+}
+
+#command {
+	float: right;
+	height: 100%;
+}
+#reports {
+	float: left;
+	height: 100%;
+}
+#astrometrics {
+	overflow: hidden;
+}
+
+#command > section {
+	height: 75%;
+}
+
+#reports > section {
+	height: 50%;
 }

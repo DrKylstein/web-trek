@@ -37,7 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
         <script src="game.js"></script>
     <body>
         <div id="command">
-            <section>
+            <section id="weapons">
                 <h1><span>Weapons</span></h1>
                 <table>
                     <tr>
@@ -53,7 +53,7 @@ POSSIBILITY OF SUCH DAMAGE.
                         <th class="column">Torepdos</th>
                         <td id="torpedo-count">0</td>
                         <!--td id="torpedo-target">(0,0)</td-->
-                        <td><a class="button" id="launch-torpedo" href="#">Launch</a></td>
+                        <td><div class="button" id="launch-torpedo">Launch</div></td>
                     </tr>
                     <tr>
                         <th class="column">Phasers</th>
@@ -64,7 +64,7 @@ POSSIBILITY OF SUCH DAMAGE.
                             </div>
                         </td>
                         <td>
-                            <a class="button" id="fire-phasers" href="#">Fire</a>
+                            <div class="button" id="fire-phasers">Fire</div>
                         </td>
                     </tr>
                 </table>
@@ -75,7 +75,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     <tr><th class="column">Docking Hatch</th><td id="docked">Closed</td>
                     <tr><th class="column">Emergency Repairs</th><td id="total-damage">0.0</td></tr>
                 </table>
-                <a class="button" id="do-repair" href="#">Authorize</a>
+                <div class="button" id="do-repair">Authorize</div>
             </section>
             <section id="helm">
                 <h1><span>Helm</span></h1>
@@ -92,26 +92,19 @@ POSSIBILITY OF SUCH DAMAGE.
                     </tr> 
                     <tr><th class="column">ETA</th><td id="eta">0</td></tr> 
                 </table>
-                <a id="engage" href="#" class="button">Engage</a>
+                <div id="engage" class="button">Engage</div>
             </section>
         </div>
         <div id="reports">
-            <section>
+            <section id="status">
                 <h1><span>Mission Status</span></h1>
                 <table>
-                    <!--tr><th class="column">Location</th><td id="quadrant-name">Subspace Anomaly</td></tr-->
-                    <tr><th class="column">Condition</th><td id="condition">Green</td></tr>
                     <tr><th class="column">Stardate</th><td id="time">0</td></tr>
-                    <tr><th class="column">Mission Deadline</th><td id="end-time">0</td></tr>
-                </table>
-                <table>
-                    <tr><th></th><th>Nearby</th><th>Total</th>
-                    <!--tr><th class="column">Position</th><td id="sector">(0,0)</td><td id="quadrant">(0,0)</td></tr-->
-                    <tr><th class="column">Klingons <span class="klingon">&#9660;</span></th><td id="quadrant-klingons">0</td><td id="total-klingons">0</td></tr>
-                    <tr><th class="column">Starbases <span class="starbase">&#9632;</span></th><td id="quadrant-bases">0</td><td id="total-bases">0</td></tr>
-                    <!--tr><th class="column">Stars</th><td id="quadrant-stars">0</td><td id="total-stars">0</td></tr-->
-                </table>
-                <table>
+                    <tr><th class="column">Condition</th><td id="condition">Green</td></tr>
+                    <tr><th class="column">Position</th><td id="position">Subspace Anomaly</td></tr>
+                    <tr><th class="column">Time Left</th><td id="end-time">0</td></tr>
+                    <tr><th class="column">Klingons <span class="klingon">&#9660;</span></th><td id="total-klingons">0</td></tr>
+                    <tr><th class="column">Starbases <span class="starbase">&#9632;</span></th><td id="total-bases">0</td></tr>
                     <tr>
                         <th class="column">Energy</th>
                         <td>
@@ -138,10 +131,10 @@ POSSIBILITY OF SUCH DAMAGE.
                 </table>
             </section>
         </div>
-        <section class="tabbed" id="astrometrics">
+        <div class="tabbed" id="astrometrics">
             <ol>
-                <li><a href="#">Sensor Scan</a></li>
-                <li><a href="#">Starchart</a></li>
+                <li>Sensor Scan</li>
+                <li>Starchart</li>
             </ol>
             <section id="sensors">
                 <table id="srs" class="grid">
@@ -182,28 +175,28 @@ POSSIBILITY OF SUCH DAMAGE.
                     <tr><th>&nbsp;</th></tr>
                 </table>
             </section>
-        </section>
+        </div>
         <section id="win-message" class="message-box">
             <h1><span>Mission Complete</span></h1>
             <p>
                 You have destroyed the last Klingon Ship!
                 Would like to try another mission?
             </p>
-            <a href="#" class="button">Try Again</a>
+            <div class="button">Try Again</div>
         </section>
         <section id="time-message" class="message-box">
             <h1><span>Mission Failed</span></h1>
             <p>
                 You are too late! The Klingons have taken Federation HQ!
             </p>
-            <a href="#" class="button">Try Again</a>
+            <div class="button">Try Again</div>
         </section>
         <section id="destroyed-message" class="message-box">
             <h1><span>Mission Failed</span></h1>
             <p>
                 The ship has been destroyed!
             </p>
-            <a href="#" class="button">Try Again</a>
+            <div class="button">Try Again</div>
         </section>
     </body>
 </html>
