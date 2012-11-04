@@ -24,6 +24,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 /*
+-clearer starchart display
 -add additional system damage effects
 -torpedo blast radius to discourage overuse?
 */
@@ -560,15 +561,21 @@ function ScannerDisplay(widget, player) {
                 this._symbolIcons[things[i].category]);
         }
         lrs = this._player.longRangeSensors();
+        function summarize(category, count) {
+            if(count) {
+                return '<span class='+category+'>'+count+'</span>';
+            }
+            return '';
+        }
         for(var dx=-1;dx<=1;++dx) {
             for(var dy=-1;dy<=1;++dy) {
                 if(lrs[dy+1][dx+1] == undefined) {
                     this._summaries['('+dx+','+dy+')'].innerHTML = '';
                 } else if(!(dx == 0 && dy == 0)) {
                     this._summaries['('+dx+','+dy+')'].innerHTML = (
-                        lrs[dy+1][dx+1].klingons + '' 
-                        + lrs[dy+1][dx+1].starbases + ''
-                        + lrs[dy+1][dx+1].stars + ''
+                        summarize('klingon', lrs[dy+1][dx+1].klingons) +
+                        summarize('starbase', lrs[dy+1][dx+1].starbases) +
+                        summarize('star', lrs[dy+1][dx+1].stars)
                     );
                 }
             }
@@ -593,6 +600,12 @@ function StarchartDisplay(widget, chart) {
     this._chart = chart;
     
     this.update = function() {
+        function summarize(category, count) {
+            if(count) {
+                return '<span class='+category+'>'+count+'</span>';
+            }
+            return '';
+        }
         for(var x=0;x<this._chart.width;++x) {
             for(var y=0;y<this._chart.height;++y) {
                 var summary;
@@ -600,7 +613,10 @@ function StarchartDisplay(widget, chart) {
                 if(info == undefined) {
                     summary = '';
                 } else {
-                    summary = info.klingons + '' + info.starbases + '' + info.stars;
+                    summary = (summarize('klingon', info.klingons)
+                        + summarize('starbase', info.starbases)
+                        + summarize('star', info.stars)
+                    );
                 }
                 this._widget.cellHtml(x, y, summary);
             }
