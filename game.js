@@ -573,7 +573,7 @@ function ScannerDisplay(widget, player) {
         for(var dx=-1;dx<=1;++dx) {
             for(var dy=-1;dy<=1;++dy) {
                 if(lrs[dy+1][dx+1] == undefined) {
-                    this._summaries['('+dx+','+dy+')'].innerHTML = '';
+                    this._summaries['('+dx+','+dy+')'].innerHTML = '&nbsp;';
                 } else if(!(dx == 0 && dy == 0)) {
                     this._summaries['('+dx+','+dy+')'].innerHTML = (
                         summarize('klingon', lrs[dy+1][dx+1].klingons) +

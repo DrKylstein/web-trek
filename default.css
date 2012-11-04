@@ -53,20 +53,16 @@ section {
 /* GUI */
 .grid td, .grid th {
 	text-align: center;
-	padding: 0.25em;
+	padding: 0em;
+	width: 2em;
+	height: 2em;
 }
 .grid .cell {
 	border: 0.1em solid #3079f9;
-	padding: 0em;
 	background: #102973;
-	width: 2em;
-	height: 2em;
 	cursor: pointer;
 }
 .grid .adjacent-summary {
-	padding: 0em;
-	width: 2em;
-	height: 2em;
 	cursor: pointer;
 }
 .grid {
@@ -87,9 +83,11 @@ section {
 }
 .tabbed > ol > li {
 	color: #3079f9;
+	cursor: pointer;
 }
 .tabbed > ol .active {
 	color: inherit;
+	cursor: default;
 }
 .tabbed > section {
 	display: none;
@@ -321,7 +319,7 @@ h1, .tabbed > ol {
 	position: absolute;
 	bottom: 0em;
 }
-section, .tabbed {
+.tabbed {
 	position: relative;
 }
 .tabbed > section {
@@ -357,22 +355,22 @@ td > .slider, td > .bargraph {
 	text-align: center;
 }
 
+
 #command {
 	float: right;
-	height: 100%;
+	width: 25%;
 }
 #reports {
 	float: left;
-	height: 100%;
+	width: 25%;
 }
 #astrometrics {
 	overflow: hidden;
 }
 
 #command > section {
-	height: 75%;
+	height: 33%;
 }
-
 #reports > section {
 	height: 50%;
 }
