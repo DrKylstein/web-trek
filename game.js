@@ -31,14 +31,17 @@ bug: ship (sometimes) doesn't appear when moving (or only starting out?) into
 -torpedo blast radius to discourage overuse?
 -try to get higher klingon density? lots of lone wolves.
 */
-function Galaxy() {
+function Galaxy(size, qSize) {
     this.quadrants = new Array();
+    this.width = size[0];
+    this.height = size[1];
+    this.qSize = qSize;
     this._klingons = 0; defineWatchableValue(this, 'klingons', '_klingons');
     this._starbases = 0; defineWatchableValue(this, 'starbases', '_starbases');
     this._stars = 0; defineWatchableValue(this, 'stars', '_stars');
-    for(var y=0; y<10; ++y) {
+    for(var y=0; y<this.height; ++y) {
         this.quadrants.push(new Array());
-        for(var x=0; x<10; ++x) {
+        for(var x=0; x<this.width; ++x) {
             var quadrant = {'klingons':0, 'stars':0, 'starbases':0};
             this.quadrants[y].push(quadrant);
         }
@@ -47,10 +50,10 @@ function Galaxy() {
         this._klingons = 0;
         this._starbases = 0;
         this._stars = 0;
-        for(var y=0; y<10; ++y) {
-            for(var x=0; x<10; ++x) {
+        for(var y=0; y<this.height; ++y) {
+            for(var x=0; x<this.width; ++x) {
                 var quadrant = {'klingons':0, 'stars':0, 'starbases':0};
-                var rnd = random.range(100);
+                var rnd = random.range(1,101);
                 if(rnd > 98) {
                     quadrant['klingons'] = 3;
                 } else if (rnd > 95) {
@@ -59,18 +62,18 @@ function Galaxy() {
                     quadrant['klingons'] = 1;
                 }
                 this._klingons += quadrant['klingons'];
-                if(random.range(100) > 96) {
+                if(random.range(1,101) > 96) {
                     quadrant['starbases'] = 1;
                 }
                 this._starbases += quadrant['starbases'];
-                quadrant['stars'] = random.range(10);
+                quadrant['stars'] = random.range(1,10);
                 this._stars += quadrant['stars'];
                 this.quadrants[y][x] = quadrant;
             }
         }
         if (this.starbases == 0) {
-            var x = random.range(10);
-            var y = random.range(10);
+            var x = random.range(this.width);
+            var y = random.range(this.height);
             this.quadrants[y][x]['starbases'] = 1;
             this.starbases += 1;
         }
@@ -82,21 +85,23 @@ function Galaxy() {
         return this.quadrants[y][x];
     }
     this.getQuadrant = function getQuadrant(qx, qy, ships) {
-        return new Quadrant(this, qx, qy, ships);
+        return new Quadrant(this, [qx, qy], this.qSize, ships);
     }
     this.unifiedCoordinates = function(sectorPos, quadrantPos) {
-        return [sectorPos[0] + (quadrantPos[0] * 10), sectorPos[1] + (quadrantPos[1] * 10)];
+        return [sectorPos[0] + (quadrantPos[0] * this.width), sectorPos[1] + (quadrantPos[1] * this.height)];
     }
 }
-function Quadrant(galaxy, x, y, ships) {
+function Quadrant(galaxy, pos, size, ships) {
     this._galaxy = galaxy;
-    this.x = x;
-    this.y = y;
+    this.x = pos[0];
+    this.y = pos[1];
+    this.width = size[0];
+    this.height = size[1];
     this.things = ships;
     this.emptySpots = function emptySpots() {
         var freeCells = new Array();
-        for(var x=0;x<10;++x) {
-            for(var y=0;y<10;++y) {
+        for(var x=0;x<this.width;++x) {
+            for(var y=0;y<this.height;++y) {
                 var occupied = false;
                 for(i in self.things) {
                     if(i.x == x || i.y == y) {
@@ -610,7 +615,7 @@ function StarchartDisplay(widget, chart) {
 function Game(widgets) {
     var self = this;
     this._widgets = widgets;
-    this.galaxy = new Galaxy();
+    this.galaxy = new Galaxy([10,10], [10,10]);
     this.player = new Starship(self.galaxy);
     this._endTime = 26; defineWatchableValue(this, 'endTime', '_endTime');
     this._time = 0; defineWatchableValue(this, 'time', '_time');
@@ -644,7 +649,11 @@ function Game(widgets) {
     }
     
     this._updateWarp = function _updateWarp(value) {
-        self._widgets['engage'].disabled = !self.player.canMove(self.ds, self.dq);
+        if(self._widgets['srs'].getMarked() || self._widgets['starchart'].getMarked()) {
+            self._widgets['engage'].disabled = !self.player.canMove(self.ds, self.dq);
+        } else {
+            self._widgets['engage'].disabled = true;
+        }
         var cost = self.player.travelCost(self.ds, self.dq);
         var travelTime = self.player.travelTime(cost);
         if(travelTime > 0) {
