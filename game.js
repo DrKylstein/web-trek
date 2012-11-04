@@ -23,14 +23,14 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 POSSIBILITY OF SUCH DAMAGE.
 */
+/*
+bug: ship (sometimes) doesn't appear when moving (or only starting out?) into 
+  quadrant at y=0.
 
-//bug: ship (sometimes) doesn't appear when moving (or only starting out?) 
-//into quadrant at y=0.
-
-//add additional system damage effects
-
-//torpedo blast radius to discourage overuse?
-
+-add additional system damage effects
+-torpedo blast radius to discourage overuse?
+-try to get higher klingon density? lots of lone wolves.
+*/
 function Galaxy() {
     this.quadrants = new Array();
     this._klingons = 0; defineWatchableValue(this, 'klingons', '_klingons');
@@ -58,13 +58,13 @@ function Galaxy() {
                 } else if (rnd > 80) {
                     quadrant['klingons'] = 1;
                 }
-                this.klingons += quadrant['klingons'];
+                this._klingons += quadrant['klingons'];
                 if(random.range(100) > 96) {
                     quadrant['starbases'] = 1;
                 }
-                this.starbases += quadrant['starbases'];
+                this._starbases += quadrant['starbases'];
                 quadrant['stars'] = random.range(10);
-                this.stars += quadrant['stars'];
+                this._stars += quadrant['stars'];
                 this.quadrants[y][x] = quadrant;
             }
         }
@@ -74,6 +74,9 @@ function Galaxy() {
             this.quadrants[y][x]['starbases'] = 1;
             this.starbases += 1;
         }
+        this.klingonsChanged(this._klingons);
+        this.starbasesChanged(this._starbases);
+        this.starsChanged(this._stars);
     }
     this.quadrantInfo = function quadrantInfo(x,y) {
         return this.quadrants[y][x];
@@ -152,9 +155,48 @@ function Quadrant(galaxy, x, y, ships) {
     };
     var info = this._galaxy.quadrantInfo(this.x, this.y);
     this.generate(info.klingons, info.starbases, info.stars);
-    this.raycast = function raycast(pos1, pos2) {
-        
-    }
+    this.hitScan = function hitscan(pos0, pos1) {
+        var hitCells = new Array();
+        var steep = Math.abs(pos1[1] - pos0[1]) > Math.abs(pos1[0] - pos0[0]);
+        if(steep) {
+            pos0 = [pos0[1], pos0[0]];
+            pos1 = [pos1[1], pos1[0]];
+        }
+        if(pos0[0] > pos1[0]) {
+            var temp = pos1;
+            pos1 = pos0;
+            pos0 = temp;
+        }
+        var delta = [pos1[0]-pos0[0], Math.abs(pos1[1]-pos0[1])];
+        var error = delta[0]/2;
+        var ystep;
+        var y = pos0[1];
+        if(pos0[1] < pos1[1]) {
+            ystep = 1;
+        } else {
+            ystep = -1;
+        }
+        for(var x=pos0[0]; x<pos1[0]; ++x) {
+            if(x != pos0[0]) {
+                if(steep) {
+                    hitCells.push([y,x]);
+                } else {
+                    hitCells.push([x,y]);
+                }
+            }
+            error -= delta[1];
+            if(error < 0) {
+                y += ystep;
+                error += delta[0];
+            }
+        }
+        for(var i in hitCells) {
+            if(this.sectorContents(hitCells[i][0], hitCells[i][1])) {
+                return true;
+            }
+        }
+        return false;
+    };
 }
 
 function Starchart(w,h) {
@@ -297,10 +339,14 @@ function Starship(galaxy) {
         return dt;
     };
     
-    this.launchTorpedo = function launchTorpedo(x,y) {
-        if(this.torpedos > 0) {
+    this.canTorpedoReach = function canTorpedoReach(pos) {
+        return !this.quadrant.hitScan([this.x, this.y], pos);
+    }
+    
+    this.launchTorpedo = function launchTorpedo(pos) {
+        if(this.torpedos > 0 && this.canTorpedoReach(pos)) {
             --this.torpedos;
-            var target = this.quadrant.sectorContents(x, y)
+            var target = this.quadrant.sectorContents(pos[0], pos[1])
             if(target != undefined && target != this) {
                 target.damage(10000);
             }
@@ -713,10 +759,14 @@ function Game(widgets) {
         }
         self._updateDamage();
         self.checkDead();
+        self.checkTorpedo();
     };
        
     this.checkTorpedo = function checkTorpedo() {
-        if(self.player.torpedos > 0 && self._widgets['srs'].getMarked() != undefined) {
+        if(self.player.torpedos > 0 
+            && self._widgets['srs'].getMarked() != undefined 
+            && self.player.canTorpedoReach(self._widgets['srs'].getMarked())
+        ) {
             self._widgets['launch-torpedo'].disabled = false;
         } else {
             self._widgets['launch-torpedo'].disabled = true;
@@ -727,7 +777,7 @@ function Game(widgets) {
         if(self._widgets['srs'].getMarked() == undefined) {
             return;
         }
-        self.player.launchTorpedo(self._widgets['srs'].getMarked()[0], self._widgets['srs'].getMarked()[1]);
+        self.player.launchTorpedo(self._widgets['srs'].getMarked());
         self.klingonsShoot();
         self._quadrantChanged();
         self._updateDamage();
