@@ -24,12 +24,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 /*
-bug: ship (sometimes) doesn't appear when moving (or only starting out?) into 
-  quadrant at y=0.
-
 -add additional system damage effects
 -torpedo blast radius to discourage overuse?
--try to get higher klingon density? lots of lone wolves.
 */
 function Galaxy(size, qSize) {
     this.quadrants = new Array();
@@ -99,12 +95,13 @@ function Quadrant(galaxy, pos, size, ships) {
     this.height = size[1];
     this.things = ships;
     this.emptySpots = function emptySpots() {
+        var occupied = false;
         var freeCells = new Array();
         for(var x=0;x<this.width;++x) {
             for(var y=0;y<this.height;++y) {
-                var occupied = false;
+                occupied = false;
                 for(i in self.things) {
-                    if(i.x == x || i.y == y) {
+                    if(self.things[i].x == x || self.things[i].y == y) {
                         occupied = true;
                         break;
                     }
@@ -261,7 +258,7 @@ function Starship(galaxy) {
         this.energy = _MAX_ENERGY;
         this.torpedos = _MAX_TORPEDOS;
         this.dead = false;
-        this.quadrant = this._galaxy.getQuadrant(random.range(10), random.range(10), [this])
+        this.quadrant = this._galaxy.getQuadrant(random.range(this._galaxy.width), random.range(this._galaxy.height), [this]);
         this.starchart.clear();
         this.starchart.update(this._galaxy, [this.quadrant.x, this.quadrant.y]);
         this.docked = false;
