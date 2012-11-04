@@ -839,6 +839,10 @@ function Game(widgets) {
         
         self.galaxy.klingonsChanged = function klingonsChanged(value) {
             $('#total-klingons').html(value);
+            if(value == 0) {
+                self._widgets['win-message'].show();
+                self._widgets['win-message'].onConfirm = self.newGame;
+            }
         }
         self.galaxy.starbasesChanged = function starbasesChanged(value) {
             $('#total-bases').html(value);

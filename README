@@ -12,8 +12,6 @@ I refered to the following for gameplay details:
 Notes:
 * Damage effects are not currently implemented for anything but engines and the
   Engineering department.
-* The win condition is not yet recognized, but you'll know when you hit 0 
-  klingons.
-* torepdos aren't restricted to line of sight yet.
+* Torepdos aren't restricted to line of sight yet.
 
 Here's a playable version: http://mechanica.herobo.com/web-trek
