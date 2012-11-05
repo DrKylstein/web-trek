@@ -36,6 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
         <script src="ui.js"></script>
         <script src="game.js"></script>
     <body>
+        <div id="main">
         <div id="command">
             <section id="weapons">
                 <h1><span>Weapons</span></h1>
@@ -69,14 +70,14 @@ POSSIBILITY OF SUCH DAMAGE.
                     </tr>
                 </table>
             </section>
-            <section id='docking'>
+            <!--section id="docking">
                 <h1>Docking</h1>
                 <table>
                     <tr><th class="column">Docking Hatch</th><td id="docked">Closed</td>
                     <tr><th class="column">Emergency Repairs</th><td id="total-damage">0.0</td></tr>
                 </table>
                 <div class="button" id="do-repair">Repair</div>
-            </section>
+            </section-->
             <section id="helm">
                 <h1><span>Helm</span></h1>
                 <table>
@@ -94,44 +95,23 @@ POSSIBILITY OF SUCH DAMAGE.
                 </table>
                 <div id="engage" class="button">Engage</div>
             </section>
-        </div>
-        <div id="reports">
-            <section id="status">
-                <h1><span>Mission Status</span></h1>
-                <table>
-                    <tr><th class="column">Stardate</th><td id="time">0</td></tr>
-                    <tr><th class="column">Condition</th><td id="condition">Green</td></tr>
-                    <tr><th class="column">Position</th><td id="position">Subspace Anomaly</td></tr>
-                    <tr><th class="column">Time Left</th><td id="end-time">0</td></tr>
-                    <tr><th class="column">Klingons <span class="klingon">&#9660;</span></th><td id="total-klingons">0</td></tr>
-                    <tr><th class="column">Starbases <span class="starbase">&#9632;</span></th><td id="total-bases">0</td></tr>
-                    <tr>
-                        <th class="column">Energy</th>
-                        <td>
-                            <div data-step=1 data-min=0 data-max=3000 data-value=3000 id="energy" class="bargraph horizontal">
-                                <div class="bar"></div>
-                                <div class="label">3000</div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </section>
             <section id="damage-control">
                 <h1><span>Engineering</span></h1>
                 <table>
                     <tr><th>System</th><th>Repair Time</th></tr>
                     <tr><th class="column">Warp Engines</th><td id="engine-damage">0.0</td></tr>
-                    <tr><th class="column">Short Range Sensors</th><td id="srs-damage">0.0</td></tr>
+                    <!--tr><th class="column">Short Range Sensors</th><td id="srs-damage">0.0</td></tr>
                     <tr><th class="column">Long Range Sensors</th><td id="lrs-damage">0.0</td></tr>
                     <tr><th class="column">Phaser Control</th><td id="phaser-damage">0.0</td></tr>
-                    <tr><th class="column">Photon Tubes</th><td id="torpedo-damage">0.0</td></tr>
+                    <tr><th class="column">Photon Tubes</th><td id="torpedo-damage">0.0</td></tr-->
                     <tr><th class="column">Damage Control</th><td id="damage-damage">0.0</td></tr>
-                    <tr><th class="column">Shield Control</th><td id="shield-damage">0.0</td></tr>
-                    <tr><th class="column">Library Computer</th><td id="library-damage">0.0</td></tr>
+                    <!--tr><th class="column">Shield Control</th><td id="shield-damage">0.0</td></tr>
+                    <tr><th class="column">Library Computer</th><td id="library-damage">0.0</td></tr-->
                 </table>
+                <div class="button" id="do-repair">Repair</div>
             </section>
         </div>
-        <div class="tabbed" id="astrometrics">
+        <section class="tabbed" id="astrometrics">
             <ol>
                 <li>Sensor Scan</li>
                 <li>Starchart</li>
@@ -175,7 +155,32 @@ POSSIBILITY OF SUCH DAMAGE.
                     <tr><th>&nbsp;</th></tr>
                 </table>
             </section>
+        </section>
         </div>
+        <section id="status">
+            <table>
+                <tr><th class="column">Stardate</th><td id="time">0</td></tr>
+                <tr><th class="column">Condition</th><td id="condition">Green</td></tr>
+                <tr><th class="column">Position</th><td id="position">Subspace Anomaly</td></tr>
+            </table>
+            <table>
+                <tr><th class="column">Time Left</th><td id="end-time">0</td></tr>
+                <tr><th class="column">Klingons <span class="klingon">&#9660;</span></th><td id="total-klingons">0</td></tr>
+                <tr><th class="column">Starbases <span class="starbase">&#9632;</span></th><td id="total-bases">0</td></tr>
+            </table>
+            <table>
+                <tr>
+                    <th class="column">Energy</th>
+                    <td>
+                        <div data-step=1 data-min=0 data-max=3000 data-value=3000 id="energy" class="bargraph horizontal">
+                            <div class="bar"></div>
+                            <div class="label">3000</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </section>
+        <h1 id="gndn">2557-1</h1><h1>Starship Oepration Status</h1> 
         <section id="win-message" class="message-box">
             <h1><span>Mission Complete</span></h1>
             <p>

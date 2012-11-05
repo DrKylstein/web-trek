@@ -295,40 +295,8 @@ table {
 	border-collapse: separate;
 	border-spacing: 0.25em;
 }
-section {
-	border: 0.5em solid #3079f9;
-	margin: 0.25em;
-	padding: 0.25em;
-	margin-bottom: -0.5em;
-	margin-top: 0em;
-}
-section:first-child {
-	margin-top: 0.25em;
-	border-top-left-radius: 1em;
-	border-top-right-radius: 1em;
-}
-section:last-child {
-	margin-bottom: 0.25em;
-	border-bottom-left-radius: 1em;
-	border-bottom-right-radius: 1em;
-}
-.tabbed > section {
-	margin: 0.25em;
-	border-radius: 1em;
-}
 h1, .tabbed > ol {
 	font-size: 125%;
-	text-align: center;
-}
-.tabbed > ol {
-	position: absolute;
-	bottom: 0em;
-}
-.tabbed {
-	position: relative;
-}
-.tabbed > section {
-	margin-bottom: 1.75em;
 }
 
 td > .slider, td > .bargraph {
@@ -360,22 +328,61 @@ td > .slider, td > .bargraph {
 	text-align: center;
 }
 
-
 #command {
 	float: right;
-	width: 25%;
-}
-#reports {
-	float: left;
-	width: 25%;
+	border-left: 0.5em solid #3079f9;
+	margin-left: -0.5em;
+	padding: 0.25em;
+	width: 20em;
+	margin-right: -21em;
 }
 #astrometrics {
+	border-right: 0.5em solid #3079f9;
+	margin-right: -0.5em;
+	padding: 0.25em;
+}
+#status {
+	border-bottom-left-radius: 2em;
+	border-bottom-right-radius: 2em;
+	border: 0.5em solid #3079f9;
+	margin: 0.25em;
+	padding: 0.25em;
 	overflow: hidden;
 }
-
-#command > section {
-	height: 33%;
+#status table {
+	float: left;
+	width: 18em;
+	margin-right: 1em;
 }
-#reports > section {
-	height: 50%;
+#main {
+	overflow: hidden;
+	margin: 0.25em;
+	border-top-left-radius: 2em;
+	border-top-right-radius: 2em;
+	border: 0.5em solid #3079f9;
+	margin: 0.25em;
+	margin-bottom: 1em;
+	padding-right: 21em;
+}
+.tabbed > ol {
+	margin-left: 1em;
+}
+#command section {
+	margin-bottom: 1em;
+}
+
+body > h1 {
+	font-size: 200%;	
+}
+#gndn {
+	float: right;
+	font-size: 300%;
+	margin-top: -0.5em;
+	background: #000;
+	margin-right: 1em;
+	padding: 0.1em;
+	font-weight: bold;
+}
+.red-alert #gndn {
+	background: #200;
 }
