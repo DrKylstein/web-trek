@@ -79,7 +79,7 @@ section {
 }
 .tabbed > ol > li {
 	float: left;
-	width: 5em;
+	margin-right: 1em;
 }
 .tabbed > ol > li {
 	color: #3079f9;
@@ -103,8 +103,8 @@ section {
 	margin: auto;
 	border: 0.1em solid #3079f9;
 }
-.slider.vertical, .bargraph.vertical {
-	height: 5em;
+.vertical {
+	height: 7em;
 	width: 1.5em;
 }
 .slider.vertical .handle {
@@ -113,7 +113,9 @@ section {
 }
 
 .horizontal {
-	width: 5em;
+	/*width: 7em;*/
+	width: 100%;
+	min-width: 4em;
 	height: 1.5em;
 }
 .slider.horizontal .handle {
@@ -162,10 +164,13 @@ section {
 	display: block;
 	background: #3ccf8b;
 	margin: auto;
-	width: 4em;
+	width: 5em;
 	text-align: center;
 	border-radius: 0.5em;
 	cursor: pointer;
+}
+table .button {
+	width: auto;
 }
 .button.disabled {
 	background: #444;
@@ -265,10 +270,10 @@ section {
 /* etc */
 
 body {
-    font-size: 150%;
+    font-size: 100%;
     background: #000;
 	color: #00d6f7;
-    font-family: LCARS, Impact;
+    font-family: Helvetica, Arial, sans;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 0em;
