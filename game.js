@@ -724,8 +724,8 @@ function Game(widgets) {
             }
             return '0'+n;
         }
-        $('#position').html(quadrantName([self.player.quadrant.x, self.player.quadrant.y]) + ' ('+zeroPad(self.player.x+1)+', '+zeroPad(self.player.y+1)+')');
-        //$('#quadrant').html('('+self.player.quadrant.x+','+self.player.quadrant.y+')');
+        $('#location').html(quadrantName([self.player.quadrant.x, self.player.quadrant.y]));
+        $('#position').html('('+zeroPad(self.player.quadrant.x+1)+', '+zeroPad(self.player.quadrant.y+1)+')');
     }
     
     this.klingonsMove = function klingonsMove() {
