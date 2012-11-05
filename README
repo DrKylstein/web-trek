@@ -6,11 +6,7 @@ details.
 A free web-based implementation of the classic Star Trek-inspired Basic game.
 
 I refered to the following for gameplay details:
-* Super Star Trek (C) David Ahl 1978
+* Super Star Trek (C) Robert Leedom and David Ahl 1978
 * Super Star Trek Classic (v1.1) (C) 1996 Chris Nystrom
-
-Notes:
-* Damage effects are not currently implemented for anything but engines and the
-  Engineering department.
 
 Here's a playable version: http://mechanica.herobo.com/web-trek
