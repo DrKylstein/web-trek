@@ -825,13 +825,12 @@ function Game(widgets) {
     }
 
     this._initWidgets = function() {
-        
-        this.timeChanged = function timeChanged(value) {
-            $('#time').html((value/10).toFixed(1));
+        function timeChanged(value) {
+            $('#time').html((self.time/10).toFixed(1));
+            $('#end-time').html(((self.endTime-self.time)/10).toFixed(1));
         }
-        this.endTimeChanged = function endTimeChanged(value) {
-            $('#end-time').html((value/10).toFixed(1));
-        }
+        this.timeChanged = timeChanged;
+        this.endTimeChanged = timeChanged;
                 
         self._widgets['shields'].onchange = function shieldsSliderChanged(value){
             self.player.shieldControl(value);
