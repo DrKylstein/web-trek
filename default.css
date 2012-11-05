@@ -105,7 +105,7 @@ section {
 }
 .vertical {
 	height: 7em;
-	width: 1.5em;
+	width: 2em;
 }
 .slider.vertical .handle {
 	margin-top: 0px;
@@ -116,7 +116,7 @@ section {
 	/*width: 7em;*/
 	width: 100%;
 	min-width: 5em;
-	height: 1.5em;
+	height: 2em;
 }
 .slider.horizontal .handle {
 	margin-left: 0px;
@@ -138,7 +138,7 @@ section {
 	top: 2em;
 }
 .horizontal .label {
-	top: 0.25em;
+	top: 0.5em;
 }
 .bargraph.vertical .bar {
 	left: 0em;
