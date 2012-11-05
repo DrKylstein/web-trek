@@ -209,11 +209,16 @@ table .button {
 	left: 0em;
 	right: 0em;
 	bottom: 0em;
-	padding: 0.5em;
-	border-radius: 1em;	
+	padding: 0.25em;
+	margin: 0.25em;
+	border: 0.5em solid #3079f9;
+	border-radius: 2em;
 }
 .message-box p {
 	margin: 1em;
+}
+.message-box h1 {
+	text-align: center;
 }
 /* offline */
 .offline, .offline section, .offline .grid .cell, .offline .slider, .offline .bargraph {
