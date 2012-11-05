@@ -115,7 +115,7 @@ section {
 .horizontal {
 	/*width: 7em;*/
 	width: 100%;
-	min-width: 4em;
+	min-width: 5em;
 	height: 1.5em;
 }
 .slider.horizontal .handle {
