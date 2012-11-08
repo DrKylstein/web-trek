@@ -55,6 +55,9 @@ function initializeWidgets() {
     $('.button').each(function(index) {
         widgets[this.id] = new Button(this);
     });
+    $('.log').each(function(index) {
+        widgets[this.id] = new LogBox(this);
+    });
     return widgets;
 }
 
@@ -105,17 +108,22 @@ function Widget(element) {
 function Tabbed(element) {
     var self = this;
     Widget.call(this, element);
+    self.currentIndex = 0;
     self.tabs = $(self.elementRoot).find('> ol > li').get();
     self.pages = $(self.elementRoot).find('> section').get();
+    $(self.tabs).each(function (index) {
+        $(this).removeClass('active');
+    })
+    $(self.pages).each(function (index) {
+        $(this).hide();
+    })
     self.changetab = function(index) {
-        $(self.tabs).each(function (index) {
-            $(this).removeClass('active');
-        })
-        $(self.pages).each(function (index) {
-            $(this).removeClass('active');
-        })
+        $(self.pages[self.currentIndex]).hide();
+        $(self.pages[index]).show();
+        $(self.tabs[self.currentIndex]).removeClass('active');
         $(self.tabs[index]).addClass('active');
-        $(self.pages[index]).addClass('active');
+        self.currentIndex = index;
+        //$(self.pages[index]).addClass('active');
     };
     $(self.tabs).each(function (index) {
         $(this).click(partial(self.changetab, index));
@@ -132,6 +140,13 @@ function Slider(element) {
     self.step = stepinfo['value'];
     self._precision = stepinfo['precision'];
     self.max = parseFloat($(self.elementRoot).attr('data-max'));
+    self._dynMax = self.max;
+    self.setMax = function setMax(value) {
+        self._dynMax = value;
+        if(self.value > value) {
+            self.setValue(value);
+        }
+    }
     self.min = parseFloat($(self.elementRoot).attr('data-min'));
     self.isHorizontal = $(self.elementRoot).hasClass('horizontal');
     self.displayScale = 1;
@@ -170,8 +185,18 @@ function Slider(element) {
     self.value = function() {
         return self._value;
     };
+    self.animateValue = function animateValue(value) {
+        $(self.elementHandle).stop();
+        self._value = Math.min(value, self._dynMax);
+        if(self.isHorizontal) {
+            $(self.elementHandle).animate({'margin-left':self._sliderValueToPos(self._value)+'px'});
+        } else {
+            $(self.elementHandle).animate({'margin-top':self._sliderValueToPos(self._value)+'px'});
+        }
+        $(self.elementLabel).html((self._value * self.displayScale).toFixed(self.displayPrecision));
+    };
     self.setValue = function setValue(value) {
-        self._value = value;
+        self._value = Math.min(value, self._dynMax);
         if(self.isHorizontal) {
             $(self.elementHandle).css('margin-left', self._sliderValueToPos(self._value)+'px');
         } else {
@@ -236,6 +261,19 @@ function BarGraph(element) {
     };
     self.value = function() {
         return self._value;
+    };
+    self.animateValue = function animateValue(value) {
+        var dimension;
+        self._value = value;
+        $(self.elementBar).stop();
+        if(self.isHorizontal) {
+            $(self.elementBar).animate({'right':self._valueToPos(self._value)+'px'});
+            dimension = $(self.elementRoot).width();
+        } else {
+            $(self.elementBar).animate({'top':self._valueToPos(self._value)+'px'});
+            dimension = $(self.elementRoot).height();
+        }
+        self.elementLabel.innerHTML = self._value.toFixed(self._precision);
     };
     self.setValue = function(value) {
         var dimension;
@@ -376,4 +414,15 @@ function Button(element) {
             self.onclick();
         }
     });
+}
+function LogBox(element) {
+    var self = this;
+    Widget.call(this, element);
+    self.log = function log(message) {
+        console.log(message);
+        self.elementRoot.innerHTML = message + '<br />\n' + self.elementRoot.innerHTML;
+    }
+    self.clear = function clear() {
+        self.elementRoot.innerHTML = ''
+    }
 }

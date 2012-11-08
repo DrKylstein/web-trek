@@ -102,7 +102,7 @@ function Quadrant(galaxy, pos, size, ships) {
         var freeCells = new Array();
         for(var x=0;x<this.width;++x) {
             for(var y=0;y<this.height;++y) {
-                if(this.sectorContents(x, y)) {
+                if(this.sectorContents([x, y])) {
                     continue;
                 }
                 freeCells.push([x,y]);
@@ -126,9 +126,9 @@ function Quadrant(galaxy, pos, size, ships) {
             this.things.push(new Star(pos[0],pos[1], this));
         }
     }
-    this.sectorContents = function sectorContents(x, y) {
+    this.sectorContents = function sectorContents(pos) {
         for(i in this.things) {
-            if(this.things[i].x == x && this.things[i].y == y) {
+            if(this.things[i].x == pos[0] && this.things[i].y == pos[1]) {
                 return this.things[i];
             }
         }
@@ -153,44 +153,44 @@ function Quadrant(galaxy, pos, size, ships) {
     };
     var info = this._galaxy.quadrantInfo(this.x, this.y);
     this.generate(info.klingons, info.starbases, info.stars);
-    this.hitScan = function hitscan(pos0, pos1) {
+    this.hitScan = function hitscan(origin, dest) {
         var hitCells = new Array();
-        var steep = Math.abs(pos1[1] - pos0[1]) > Math.abs(pos1[0] - pos0[0]);
-        if(steep) {
-            pos0 = [pos0[1], pos0[0]];
-            pos1 = [pos1[1], pos1[0]];
+        var major = 0;
+        var minor = 1;
+        if(Math.abs(dest[1] - origin[1]) > Math.abs(dest[0] - origin[0])) {
+            major = 1;
+            minor = 0;
         }
-        if(pos0[0] > pos1[0]) {
-            var temp = pos1;
-            pos1 = pos0;
-            pos0 = temp;
+        var majStep = 1; 
+        if(origin[major] > dest[major]) {
+            majStep = -1;
         }
-        var delta = [pos1[0]-pos0[0], Math.abs(pos1[1]-pos0[1])];
-        var error = delta[0]/2;
-        var ystep;
-        var y = pos0[1];
-        if(pos0[1] < pos1[1]) {
-            ystep = 1;
-        } else {
-            ystep = -1;
+        var delta = [dest[major]-origin[major], Math.abs(dest[minor]-origin[minor])];
+        var error = delta[major]/2;
+        var minStep = 0;
+        var minC = origin[minor];
+        if(origin[minor] < dest[minor]) {
+            minStep = 1;
+        } else if(origin[minor] > dest[minor]) {
+            minStep = -1;
         }
-        for(var x=pos0[0]; x<pos1[0]; ++x) {
-            if(x != pos0[0]) {
-                if(steep) {
-                    hitCells.push([y,x]);
-                } else {
-                    hitCells.push([x,y]);
+        var lastCell;
+        for(var majC=origin[major]; majC*majStep<=dest[major]*majStep; majC+=majStep) {
+            var lastCell = new Array();
+            lastCell[major] = majC;
+            lastCell[minor] = minC;
+            hitCells.push(lastCell);
+            console.log(lastCell,this.sectorContents(lastCell));
+            if(!(lastCell[0] == origin[0] && lastCell[1] == origin[1]) && this.sectorContents(lastCell) != undefined) {
+                if(hitCells.length > 1) {
+                    return [hitCells[hitCells.length-2], lastCell];
                 }
+                return [origin, lastCell];
             }
-            error -= delta[1];
+            error -= delta[minor];
             if(error < 0) {
-                y += ystep;
-                error += delta[0];
-            }
-        }
-        for(var i in hitCells) {
-            if(this.sectorContents(hitCells[i][0], hitCells[i][1])) {
-                return true;
+                minC += minStep;
+                error += delta[major];
             }
         }
         return false;
@@ -328,6 +328,13 @@ function Starship(galaxy) {
         if(!this.canMove(dest, qDest)) {
             return 0;
         }
+        if(qDest[0] == this.quadrant.x && qDest[1] == this.quadrant.y) {
+            console.log('intraquadrant travel');
+            var hitPos = this.quadrant.hitScan([this.x, this.y], dest)[0];
+            if(hitPos) {
+                dest = hitPos;
+            }
+        }
         var cost = this.travelCost(dest, qDest);
 
         this.energy -= cost;
@@ -350,16 +357,23 @@ function Starship(galaxy) {
     }
     
     this.launchTorpedo = function launchTorpedo(pos) {
-        if(this.torpedos > 0 && this.canTorpedoReach(pos)) {
+        if(this.torpedos > 0) {
             --this.torpedos;
-            var target = this.quadrant.sectorContents(pos[0], pos[1])
+            var hitPos = this.quadrant.hitScan([this.x, this.y], pos);
+            if(hitPos) {
+                pos = hitPos[1];
+            }
+            var target = this.quadrant.sectorContents(pos);
             if(target != undefined && target != this) {
                 target.damage(10000);
+                return target;
             }
         }
+        return false;
     };
     
     this.firePhasers = function firePhasers(amount) {
+        var report = new Array();
         if (this.energy - amount >= 0) {
             this.energy -= amount;
             var targets = new Array();
@@ -372,10 +386,12 @@ function Starship(galaxy) {
                 var perTarget = amount / targets.length;
                 for(i in targets) {
                     var damage = perTarget / distance(this.x, this.y, targets[i].x, targets[i].y) * (Math.random() + 2);
+                    report.push({'target':targets[i], 'damage':damage});
                     targets[i].damage(damage);
                 }
             }
         }
+        return report;
     }
     
     this.damage = function damage(amount) {
@@ -459,8 +475,10 @@ function Klingon(x,y, quadrant) {
                 var target = this.quadrant.things[i];
                 var damage = (this.shields/distance(this.x, this.y, target.x,target.y))*(Math.random()+2);
                 target.damage(damage);
+                return damage;
             }
         }
+        return 0;
     }
     this.damage = function damage(amount) {
         if(amount < 0.15 * this.shields) {
@@ -521,6 +539,7 @@ function ScannerDisplay(widget, player) {
     this._widget = widget;
     this._player = player;
     this._marked = [0,0];
+    this._damageAnims = new Array();
     this._summaries = {
         '(-1,-1)':$('#summary-northwest')[0],
         '(-1,0)':$('#summary-west')[0],
@@ -551,6 +570,15 @@ function ScannerDisplay(widget, player) {
         for(var y=-1;y<=1;++y) {
             $(this._summaries['('+x+','+y+')']).click(partial(neighborClickedCallback, x, y))
         }
+    }
+    this.animateDamage = function animateDamage(pos, amount) {
+        //this._widget.cellHtml(pos[0], pos[1], 'amount');
+        //this._damageAnims.push({'pos':pos, 'amount':amount})
+        var cell = this._widget.cells[pos[1]][pos[0]]
+        function thenBackInAgain() {
+            $(cell).fadeIn();
+        }
+        $(cell).fadeOut(thenBackInAgain);
     }
     this.update = function() {
         for(var x=0;x<10;++x) {
@@ -733,15 +761,17 @@ function Game(widgets) {
             var thing = this.player.quadrant.things[i];
             if(thing.category == 'klingon') {
                 thing.move();
-                thing.shoot();
             }
         }
+        this.klingonsShoot();
     }
     this.klingonsShoot = function klingonsShoot() {
         for(var i in this.player.quadrant.things) {
             var thing = this.player.quadrant.things[i];
             if(thing.category == 'klingon') {
-                thing.shoot();
+                var damage = thing.shoot();
+                self._scan.animateDamage([self.player.x, self.player.y]);
+                //self._widgets['tactical-log'].log('Recieved '+damage.toFixed(1)+' units of damage from Klingon at ('+thing.x+', '+thing.y+').');
             }
         }
     }
@@ -797,7 +827,7 @@ function Game(widgets) {
     this.checkTorpedo = function checkTorpedo() {
         if(self.player.torpedos > 0 
             && self._widgets['srs'].getMarked() != undefined 
-            && self.player.canTorpedoReach(self._widgets['srs'].getMarked())
+            /*&& self.player.canTorpedoReach(self._widgets['srs'].getMarked())*/
         ) {
             self._widgets['launch-torpedo'].disabled = false;
         } else {
@@ -809,7 +839,14 @@ function Game(widgets) {
         if(self._widgets['srs'].getMarked() == undefined) {
             return;
         }
-        self.player.launchTorpedo(self._widgets['srs'].getMarked());
+        var result = self.player.launchTorpedo(self._widgets['srs'].getMarked());
+        if(result == false) {
+            //self._widgets['tactical-log'].log('Torpedo missed.');
+            self._scan.animateDamage(self._widgets['srs'].getMarked());
+        } else {
+            //self._widgets['tactical-log'].log('Torpedo hit '+result.category+' at ('+result.x+', '+result.y+').');
+            self._scan.animateDamage([result.x, result.y]);
+        }
         self.klingonsShoot();
         self._quadrantChanged();
         self._updateDamage();
@@ -817,7 +854,13 @@ function Game(widgets) {
     };
     
     this.firePhasers = function firePhasers() {
-        self.player.firePhasers(self._widgets['phasers'].value());
+        var report = self.player.firePhasers(self._widgets['phasers'].value());
+        for(var i in report) {
+            /*self._widgets['tactical-log'].log('Phasers hit '
+            +report[i].target.category+' at ('+report[i].target.x
+            +', '+report[i].target.y+') for '+report[i].damage.toFixed(1)+' units of damage.');*/
+            self._scan.animateDamage([report[i].target.x, report[i].target.y]);
+        }
         self.klingonsShoot();
         self._quadrantChanged();
         self._updateDamage();
@@ -837,18 +880,13 @@ function Game(widgets) {
             self._updateWarp();
         };
         self.player.shieldsChanged = function shieldsChanged(value) {
-            self._widgets['shields'].setValue(value);
+            self._widgets['shields'].animateValue(value);
             self.updateCondition();
         }
-        function updatePhasers(value) {
-            if(self._widgets['phasers'].value() > self.player.energy) {
-                self._widgets['phasers'].setValue(self.player.energy);
-            }
-        }
-        self._widgets['phasers'].onchange = updatePhasers;
         self.player.energyChanged = function energyChanged(value) {
-            self._widgets['energy'].setValue(value);
-            updatePhasers();
+            self._widgets['energy'].animateValue(value);
+            self._widgets['phasers'].setMax(value);
+            self._widgets['shields'].setMax(self._widgets['shields'].value() + value);
             self._updateWarp();
         }
         self.player.torpedosChanged = function updateTorpedos(value) {
@@ -947,6 +985,7 @@ function Game(widgets) {
         self.endTime = self.time + ((25 + random.range(1,11)) * 10); //decimal fixed point n.1
         self.ds = [self.player.x, self.player.y];
         self.dq = [self.player.quadrant.x, self.player.quadrant.y];
+        //self._widgets['tactical-log'].clear();
         self._newQuadrant();
         self._updateDamage();
     }

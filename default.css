@@ -220,6 +220,14 @@ table .button {
 .message-box h1 {
 	text-align: center;
 }
+
+.log {
+	font-size: 75%;
+	height: 10em;
+	overflow: auto;
+	color: #fff;
+	background: #102973;
+}
 /* offline */
 .offline, .offline section, .offline .grid .cell, .offline .slider, .offline .bargraph {
 	background: transparent;
