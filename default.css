@@ -247,10 +247,15 @@ th {
 }
 td {
 	text-align: right;
+	color: #fff;
 }
 th.column {
 	text-align: left;
 	color: #3ccf8b;
+}
+th.unit {
+	text-align: left;
+	font-size: 75%;
 }
 table {
 	width: 100%;
