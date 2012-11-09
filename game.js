@@ -724,6 +724,11 @@ function Game(widgets) {
             $('#eta').html(0.0);
         }
         $('#travel-energy').html(cost);
+        if(self.player.damaged['engines'] > 0) {
+            $('#engines-section').addClass('offline');
+        } else {
+            $('#engines-section').removeClass('offline');
+        }
     }
 
     this.updateCondition = function updateCondition() {
