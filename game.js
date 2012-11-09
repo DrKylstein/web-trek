@@ -65,7 +65,7 @@ function Galaxy(size, qSize) {
                     quadrant['starbases'] = 1;
                 }
                 this._starbases += quadrant['starbases'];
-                quadrant['stars'] = random.range(1,10);
+                quadrant['stars'] = random.range(1,this.qSize[0]);
                 this._stars += quadrant['stars'];
                 this.quadrants[y][x] = quadrant;
             }
@@ -89,6 +89,33 @@ function Galaxy(size, qSize) {
     this.unifiedCoordinates = function(sectorPos, quadrantPos) {
         return [sectorPos[0] + (quadrantPos[0] * this.width), sectorPos[1] + (quadrantPos[1] * this.height)];
     }
+    
+    //classic names: aaaabccdpprrsssv
+    //unused letters: efghijklmnoqtuwxyz
+    //new names: efnk
+    this._starNames = new Array(
+        'Antares','Sirius',
+        'Rigel','Deneb',
+        'Procyon','Capella',
+        'Vega','Betelgeuse',
+        'Canopus','Aldebaran',
+        'Altair','Regulus',
+        'Sagittarius','Arcturus',
+        'Pollux','Spica',
+        'Fomalhaut', 'Navi',
+        'Elnath', 'Kastra'
+    );
+    this._numerals = new Array('I', 'II', 'III', 'IV', 'V');
+
+    this.quadrantName = function quadrantName(q) {
+        var nameIndex = q[1]*2;
+        if(q[0] > this.width/2) {
+            ++nameIndex;
+        }
+        var numeralIndex = q[0] % (this.width/2);
+        return this._starNames[nameIndex]+' '+this._numerals[numeralIndex];
+    }
+    
 }
 function Quadrant(galaxy, pos, size, ships) {
     this._galaxy = galaxy;
@@ -165,7 +192,9 @@ function Quadrant(galaxy, pos, size, ships) {
         if(origin[major] > dest[major]) {
             majStep = -1;
         }
-        var delta = [dest[major]-origin[major], Math.abs(dest[minor]-origin[minor])];
+        var delta = new Array();
+        delta[major] = dest[major]-origin[major]; 
+        delta[minor] = Math.abs(dest[minor]-origin[minor]);
         var error = delta[major]/2;
         var minStep = 0;
         var minC = origin[minor];
@@ -175,12 +204,13 @@ function Quadrant(galaxy, pos, size, ships) {
             minStep = -1;
         }
         var lastCell;
+        console.log('hitscan from (%d,%d) to (%d,%d)', origin[0], origin[1], dest[0], dest[1]);
         for(var majC=origin[major]; majC*majStep<=dest[major]*majStep; majC+=majStep) {
             var lastCell = new Array();
             lastCell[major] = majC;
             lastCell[minor] = minC;
             hitCells.push(lastCell);
-            console.log(lastCell,this.sectorContents(lastCell));
+            console.log(lastCell/*,this.sectorContents(lastCell)*/);
             if(!(lastCell[0] == origin[0] && lastCell[1] == origin[1]) && this.sectorContents(lastCell) != undefined) {
                 if(hitCells.length > 1) {
                     return [hitCells[hitCells.length-2], lastCell];
@@ -236,7 +266,7 @@ function Starship(galaxy) {
     
     this.category = 'starship';
     this._galaxy = galaxy;
-    this.starchart = new Starchart(10,10);
+    this.starchart = new Starchart(this._galaxy.width,this._galaxy.height);
     this._x = 0; defineWatchableValue(this, 'x', '_x');
     this._y = 0; defineWatchableValue(this, 'y', '_y');
     this.quadrant = this._galaxy.getQuadrant(0, 0);
@@ -244,12 +274,12 @@ function Starship(galaxy) {
     this._shields = 0;  defineWatchableValue(this, 'shields', '_shields');
     this._torpedos = _MAX_TORPEDOS; defineWatchableValue(this, 'torpedos', '_torpedos');
     this.dead = false;
-    this.damaged = {'engine':0, 'srs':0, 'lrs':0, 'phaser':0, 'torpedo':0, 'damage':0, 'shield':0, 'library':0}
+    this.damaged = {'engine':0, /*'srs':0, 'lrs':0,*/ 'phaser':0, 'torpedo':0, 'damage':0/*, 'shield':0, 'library':0*/}
     this._docked = false; defineWatchableValue(this, 'docked', '_docked');
     
     this.reset = function reset() {
-        this.x = random.range(10);
-        this.y = random.range(10);
+        this.x = random.range(this._galaxy.qSize[0]);
+        this.y = random.range(this._galaxy.qSize[1]);
         this.shields = 0;
         this.energy = _MAX_ENERGY;
         this.torpedos = _MAX_TORPEDOS;
@@ -306,7 +336,7 @@ function Starship(galaxy) {
         if(this.damaged['engines']) {
             return 2; //cannot exceed warp 0.2 when engines are damaged
         }
-        return Math.min(this.energy, 101);
+        return Math.min(this.energy, this._galaxy.unifiedCoordinates([1,0], [this._galaxy.width, 0])[0]);
     }
     
     this.canMove = function canMove(dest, qDest) {
@@ -329,7 +359,7 @@ function Starship(galaxy) {
             return 0;
         }
         if(qDest[0] == this.quadrant.x && qDest[1] == this.quadrant.y) {
-            console.log('intraquadrant travel');
+            //console.log('intraquadrant travel');
             var hitPos = this.quadrant.hitScan([this.x, this.y], dest)[0];
             if(hitPos) {
                 dest = hitPos;
@@ -357,7 +387,7 @@ function Starship(galaxy) {
     }
     
     this.launchTorpedo = function launchTorpedo(pos) {
-        if(this.torpedos > 0) {
+        if(this.torpedos > 0 && this.damaged.torpedo == 0) {
             --this.torpedos;
             var hitPos = this.quadrant.hitScan([this.x, this.y], pos);
             if(hitPos) {
@@ -374,7 +404,7 @@ function Starship(galaxy) {
     
     this.firePhasers = function firePhasers(amount) {
         var report = new Array();
-        if (this.energy - amount >= 0) {
+        if (this.energy - amount >= 0 && this.damaged['phaser'] == 0) {
             this.energy -= amount;
             var targets = new Array();
             for(i in this.quadrant.things) {
@@ -447,8 +477,8 @@ function Starship(galaxy) {
         for(var y=-1;y<=1;++y) {
             longRange.push(new Array());
             for(var x=-1;x<=1;++x) {
-                if(this.quadrant.x+x < 0 || this.quadrant.x+x > 9 ||
-                    this.quadrant.y+y < 0 || this.quadrant.y+y > 9) {
+                if(this.quadrant.x+x < 0 || this.quadrant.x+x >= this._galaxy.width ||
+                    this.quadrant.y+y < 0 || this.quadrant.y+y >= this._galaxy.height) {
                     longRange[y+1].push(undefined);
                 } else {
                     longRange[y+1].push(this._galaxy.quadrantInfo(this.quadrant.x+x, this.quadrant.y+y));
@@ -511,28 +541,6 @@ function Star(x,y, quadrant) {
         return 0;
     }
 }
-//classic names: aaaabccdpprrsssv
-//unused letters: efghijklmnoqtuwxyz
-//new names: efnk
-var starNames = new Array(
-    'Antares','Sirius',
-    'Rigel','Deneb',
-    'Procyon','Capella',
-    'Vega','Betelgeuse',
-    'Canopus','Aldebaran',
-    'Altair','Regulus',
-    'Sagittarius','Arcturus',
-    'Pollux','Spica',
-    'Fomalhaut', 'Navi',
-    'Elnath', 'Kastra'
-);
-var numerals = new Array('I', 'II', 'III', 'IV', 'V');
-
-function quadrantName(q) {
-    var nameIndex = Math.floor((q[0] + (q[1] * 10)) / 5);
-    var numeralIndex = (q[0] + (q[1] * 10)) % 5;
-    return starNames[nameIndex]+' '+numerals[numeralIndex];
-}
 
 function ScannerDisplay(widget, player) {
     var self = this;
@@ -581,8 +589,8 @@ function ScannerDisplay(widget, player) {
         $(cell).fadeOut(thenBackInAgain);
     }
     this.update = function() {
-        for(var x=0;x<10;++x) {
-            for(var y=0;y<10;++y) {
+        for(var x=0;x<this._player.quadrant.width;++x) {
+            for(var y=0;y<this._player.quadrant.height;++y) {
                 this._widget.cellHtml(x, y, '')
             }
         }
@@ -659,7 +667,7 @@ function StarchartDisplay(widget, chart) {
 function Game(widgets) {
     var self = this;
     this._widgets = widgets;
-    this.galaxy = new Galaxy([10,10], [10,10]);
+    this.galaxy = new Galaxy([8,8], [8,8]);
     this.player = new Starship(self.galaxy);
     this._endTime = 26; defineWatchableValue(this, 'endTime', '_endTime');
     this._time = 0; defineWatchableValue(this, 'time', '_time');
@@ -690,6 +698,8 @@ function Game(widgets) {
             }
             $('#total-damage').html((total/10).toFixed(1));
         }
+        self.updatePhasers();
+        self.checkTorpedo();
     }
     
     this._updateWarp = function _updateWarp(value) {
@@ -698,7 +708,7 @@ function Game(widgets) {
         } else {
             self._widgets['engage'].disabled = true;
         }
-        $('#range').html((self.player.maxRange()/10).toFixed(1));
+        $('#range').html((self.player.maxRange()));
         var cost = self.player.travelCost(self.ds, self.dq);
         var travelTime = self.player.travelTime(cost);
         if(travelTime > 0) {
@@ -752,7 +762,7 @@ function Game(widgets) {
             }
             return '0'+n;
         }
-        $('#location').html(quadrantName([self.player.quadrant.x, self.player.quadrant.y]));
+        $('#location').html(self.galaxy.quadrantName([self.player.quadrant.x, self.player.quadrant.y]));
         $('#position').html('('+zeroPad(self.player.quadrant.x+1)+', '+zeroPad(self.player.quadrant.y+1)+')');
     }
     
@@ -826,12 +836,17 @@ function Game(widgets) {
        
     this.checkTorpedo = function checkTorpedo() {
         if(self.player.torpedos > 0 
-            && self._widgets['srs'].getMarked() != undefined 
-            /*&& self.player.canTorpedoReach(self._widgets['srs'].getMarked())*/
+            && self._widgets['srs'].getMarked() != undefined
+            && self.player.damaged['torpedo'] == 0
         ) {
             self._widgets['launch-torpedo'].disabled = false;
         } else {
             self._widgets['launch-torpedo'].disabled = true;
+        }
+        if(self.player.damaged['torpedo'] == 0) {
+            $('#torpedo-section').removeClass('offline');
+        } else {
+            $('#torpedo-section').addClass('offline');
         }
     }
     
@@ -852,6 +867,17 @@ function Game(widgets) {
         self._updateDamage();
         self.checkDead();
     };
+    
+    this.updatePhasers = function updatePhasers() {
+        self._widgets['phasers'].setMax(self.player.energy);
+        if(self.player.damaged['phaser'] > 0) {
+            self._widgets['fire-phasers'].disabled = true;
+            $('#phasers-section').addClass('offline');
+        } else {
+            self._widgets['fire-phasers'].disabled = false;
+            $('#phasers-section').removeClass('offline');
+        }
+    }
     
     this.firePhasers = function firePhasers() {
         var report = self.player.firePhasers(self._widgets['phasers'].value());
@@ -885,7 +911,7 @@ function Game(widgets) {
         }
         self.player.energyChanged = function energyChanged(value) {
             self._widgets['energy'].animateValue(value);
-            self._widgets['phasers'].setMax(value);
+            self.updatePhasers();
             self._widgets['shields'].setMax(self._widgets['shields'].value() + value);
             self._updateWarp();
         }
@@ -924,14 +950,14 @@ function Game(widgets) {
             if(x > self.dq[0]) {
                 self.ds[0] = 0;
             } else if(x < self.dq[0]) {
-                self.ds[0] = 9;
+                self.ds[0] = self.player.quadrant.width-1;
             } else {
                 self.ds[0] = self.player.x;
             }
             if(y > self.dq[1]) {
                 self.ds[1] = 0;
             } else if(y < self.dq[1]){
-                self.ds[1] = 9;
+                self.ds[1] = self.player.quadrant.height-1;
             } else {
                 self.ds[1] = self.player.y;
             }
