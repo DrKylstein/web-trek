@@ -228,57 +228,6 @@ table .button {
 	color: #fff;
 	background: #102973;
 }
-/* offline */
-.offline, .offline section, .offline .grid .cell, .offline .slider, .offline .bargraph {
-	background: transparent;
-	border-color: #f00;
-}
-.blink.offline, .offline.blink section, .offline.blink .grid .cell, .offline.blink .slider, .offline.blink .bargraph {
-	background: #400;
-	border-color: #fff;
-}
-.offline .button, .offline .bar, .offline .horizontal .bar, .offline .vertical .bar {
-	background: #f00;
-	color: #000;
-	border-right-color: #fff;
-}
-.offline.blink .button, .offline.blink .bar {
-	background: #fff;
-	color: #400;
-}
-.offline .button.disabled, .offline.disabled .button {
-	background: #400;
-	color: #000;
-}
-.offline.blink .button.disabled, .offline.disabled.blink .button {
-	background: transparent;
-	color: #000;
-}
-.offline .bargraph .label {
-	color: #fff;
-}
-.offline.blink .bargraph .label {
-	color: #000;
-}
-.offline .slider .label {
-	color: #f00;
-}
-.offline.blink .slider .label {
-	color: #fff;
-}
-.offline .disabled, .offline .tabbed > ol a {
-	color: #400;
-}
-.offline.blink .disabled, .offline.blink .tabbed > ol a {
-	color: #000;
-}
-.offline, .offline th, .offline h1, .offline .tabbed > ol a.active {
-	color: #f00;
-}
-.blink.offline, .blink.offline th, .blink.offline h1, .offline.blink .tabbed > ol a.active {
-	color: #fff;
-}
-/* /offline */
 
 /* etc */
 
@@ -399,3 +348,55 @@ body > h1 {
 .red-alert #gndn {
 	background: #200;
 }
+
+/* offline */
+.offline, .offline section, .offline .grid .cell, .offline .slider, .offline .bargraph {
+	background: transparent;
+	border-color: #f00;
+}
+.blink.offline, .offline.blink section, .offline.blink .grid .cell, .offline.blink .slider, .offline.blink .bargraph {
+	background: #400;
+	border-color: #fff;
+}
+.offline .button, .offline .bar, .offline .horizontal .bar, .offline .vertical .bar {
+	background: #f00;
+	color: #000;
+	border-right-color: #fff;
+}
+.offline.blink .button, .offline.blink .bar {
+	background: #fff;
+	color: #400;
+}
+.offline .button.disabled, .offline.disabled .button {
+	background: #400;
+	color: #000;
+}
+.offline.blink .button.disabled, .offline.disabled.blink .button {
+	background: transparent;
+	color: #000;
+}
+.offline .bargraph .label {
+	color: #fff;
+}
+.offline.blink .bargraph .label {
+	color: #000;
+}
+.offline .slider .label {
+	color: #f00;
+}
+.offline.blink .slider .label {
+	color: #fff;
+}
+.offline .disabled, .offline .tabbed > ol a {
+	color: #400;
+}
+.offline.blink .disabled, .offline.blink .tabbed > ol a {
+	color: #000;
+}
+.offline, .offline th, .offline th.column, .offline h1, .offline .tabbed > ol a.active {
+	color: #f00;
+}
+.blink.offline, .blink.offline th, .blink.offline th.column, .blink.offline h1, .offline.blink .tabbed > ol a.active {
+	color: #fff;
+}
+/* /offline */

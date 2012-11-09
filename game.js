@@ -274,7 +274,7 @@ function Starship(galaxy) {
     this._shields = 0;  defineWatchableValue(this, 'shields', '_shields');
     this._torpedos = _MAX_TORPEDOS; defineWatchableValue(this, 'torpedos', '_torpedos');
     this.dead = false;
-    this.damaged = {'engine':0, /*'srs':0, 'lrs':0,*/ 'phaser':0, 'torpedo':0, 'damage':0/*, 'shield':0, 'library':0*/}
+    this.damaged = {'engines':0, /*'srs':0, 'lrs':0,*/ 'phasers':0, 'torpedos':0, 'damage':0, 'shields':0/*, 'library':0*/}
     this._docked = false; defineWatchableValue(this, 'docked', '_docked');
     
     this.reset = function reset() {
@@ -387,7 +387,7 @@ function Starship(galaxy) {
     }
     
     this.launchTorpedo = function launchTorpedo(pos) {
-        if(this.torpedos > 0 && this.damaged.torpedo == 0) {
+        if(this.torpedos > 0 && this.damaged['torpedos'] == 0) {
             --this.torpedos;
             var hitPos = this.quadrant.hitScan([this.x, this.y], pos);
             if(hitPos) {
@@ -404,7 +404,7 @@ function Starship(galaxy) {
     
     this.firePhasers = function firePhasers(amount) {
         var report = new Array();
-        if (this.energy - amount >= 0 && this.damaged['phaser'] == 0) {
+        if (this.energy - amount >= 0 && this.damaged['phasers'] == 0) {
             this.energy -= amount;
             var targets = new Array();
             for(i in this.quadrant.things) {
@@ -698,6 +698,13 @@ function Game(widgets) {
             }
             $('#total-damage').html((total/10).toFixed(1));
         }
+        if(self.player.damaged['shields'] > 0) {
+            self._widgets['shields'].disabled = true;
+            $('#shields-section').addClass('offline');
+        } else {
+            self._widgets['shields'].disabled = false;
+            $('#shields-section').removeClass('offline');
+        }
         self.updatePhasers();
         self.checkTorpedo();
     }
@@ -837,13 +844,13 @@ function Game(widgets) {
     this.checkTorpedo = function checkTorpedo() {
         if(self.player.torpedos > 0 
             && self._widgets['srs'].getMarked() != undefined
-            && self.player.damaged['torpedo'] == 0
+            && self.player.damaged['torpedos'] == 0
         ) {
             self._widgets['launch-torpedo'].disabled = false;
         } else {
             self._widgets['launch-torpedo'].disabled = true;
         }
-        if(self.player.damaged['torpedo'] == 0) {
+        if(self.player.damaged['torpedos'] == 0) {
             $('#torpedo-section').removeClass('offline');
         } else {
             $('#torpedo-section').addClass('offline');
@@ -870,7 +877,7 @@ function Game(widgets) {
     
     this.updatePhasers = function updatePhasers() {
         self._widgets['phasers'].setMax(self.player.energy);
-        if(self.player.damaged['phaser'] > 0) {
+        if(self.player.damaged['phasers'] > 0) {
             self._widgets['fire-phasers'].disabled = true;
             $('#phasers-section').addClass('offline');
         } else {

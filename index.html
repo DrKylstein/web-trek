@@ -44,7 +44,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     
                 </p-->
                 <table>
-                    <tr>
+                    <tr id="shields-section">
                         <th class="column">Shields</th>
                         <td colspan="2">
                             <div data-step=1 data-min=0 data-max=1500 data-value=0 id="shields" class="slider horizontal">
@@ -59,7 +59,7 @@ POSSIBILITY OF SUCH DAMAGE.
                         <!--td id="torpedo-target">(0,0)</td-->
                         <td><div class="button" id="launch-torpedo">Launch</div></td>
                     </tr>
-                    <tr>
+                    <tr id="phasers-section">
                         <th class="column">Phasers</th>
                         <td>
                             <div data-step=1 data-min=1 data-max=1000 data-value=300 id="phasers" class="slider horizontal">
@@ -102,14 +102,14 @@ POSSIBILITY OF SUCH DAMAGE.
                 <h1><span>Engineering</span></h1>
                 <table id="damage-control">
                     <tr><th>System</th><th>Repair Time</th></tr>
-                    <tr><th class="column">Warp Engines</th><td id="engine-damage">0.0</td></tr>
+                    <tr><th class="column">Warp Engines</th><td id="engines-damage">0.0</td></tr>
                     <!--tr><th class="column">Short Range Sensors</th><td id="srs-damage">0.0</td></tr>
                     <tr><th class="column">Long Range Sensors</th><td id="lrs-damage">0.0</td></tr-->
-                    <tr><th class="column">Phaser Control</th><td id="phaser-damage">0.0</td></tr>
-                    <tr><th class="column">Photon Tubes</th><td id="torpedo-damage">0.0</td></tr>
+                    <tr><th class="column">Phaser Control</th><td id="phasers-damage">0.0</td></tr>
+                    <tr><th class="column">Photon Tubes</th><td id="torpedos-damage">0.0</td></tr>
                     <tr><th class="column">Damage Control</th><td id="damage-damage">0.0</td></tr>
-                    <!--tr><th class="column">Shield Control</th><td id="shield-damage">0.0</td></tr>
-                    <tr><th class="column">Library Computer</th><td id="library-damage">0.0</td></tr-->
+                    <tr><th class="column">Shield Control</th><td id="shields-damage">0.0</td></tr>
+                    <!--tr><th class="column">Library Computer</th><td id="library-damage">0.0</td></tr-->
                     <tr><th class="column">Total</th><td id="total-damage">0.0</td></tr>
                 </table>
                 <div class="button" id="do-repair">Repair</div>

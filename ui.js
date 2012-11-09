@@ -205,6 +205,9 @@ function Slider(element) {
         $(self.elementLabel).html((self._value * self.displayScale).toFixed(self.displayPrecision));
     };
     self.mousedown = function(event) {
+        if(self.disabled) {
+            return;
+        }
         event.preventDefault();
         $('body').mousemove(self.mousemove);
         $('body').mouseup(function mouseup(event) {
@@ -213,6 +216,11 @@ function Slider(element) {
     };
     self.mousemove = function mousemove(event) {
         event.preventDefault();
+        if(self.disabled) {
+            $('body').unbind('mousemove', self.mousemove);
+            return;
+        }
+
         var baseline,
             currentLine,
             cursorLine,
