@@ -24,11 +24,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 /*
-overlap bug spotted again.
-
--clearer starchart display
--add additional system damage effects
--torpedo blast radius to discourage overuse?
+-fix hitscan!
+-klingons are actually pretty tough when they have the opportunity to shoot.
 */
 function Galaxy(size, qSize) {
     this.quadrants = new Array();
@@ -92,7 +89,7 @@ function Galaxy(size, qSize) {
     
     //classic names: aaaabccdpprrsssv
     //unused letters: efghijklmnoqtuwxyz
-    //new names: efnk
+    //new names: efkn
     this._starNames = new Array(
         'Antares','Sirius',
         'Rigel','Deneb',
