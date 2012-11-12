@@ -1074,6 +1074,7 @@ function Game(widgets) {
     this.newGame = function() {
         self.galaxy.generate();
         self.player.reset();
+        self.player.starchart.update(self.player.quadrant, self.player.longRangeSensors());
         self.endTime = self.time + ((25 + random.range(1,11)) * 10); //decimal fixed point n.1
         self.ds = [self.player.x, self.player.y];
         self.dq = [self.player.quadrant.x, self.player.quadrant.y];
