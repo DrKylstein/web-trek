@@ -209,27 +209,23 @@ function Quadrant(galaxy, pos, size, ships) {
             major = 1;
             minor = 0;
         }
-        var majStep = 1; 
-        if(origin[major] > dest[major]) {
-            majStep = -1;
-        }
-        var delta = new Array();
-        delta[major] = dest[major]-origin[major]; 
+        var delta = [0,0];
+        delta[major] = Math.abs(dest[major]-origin[major]); 
         delta[minor] = Math.abs(dest[minor]-origin[minor]);
         var error = delta[major]/2;
-        var minStep = 0;
-        var minC = origin[minor];
-        if(origin[minor] < dest[minor]) {
-            minStep = 1;
-        } else if(origin[minor] > dest[minor]) {
-            minStep = -1;
+        var pos = [origin[0], origin[1]];
+        var step = [1,1];
+        if(origin[major] >= dest[major]) {
+            step[major] = -1;
+        }
+        if(origin[minor] >= dest[minor]) {
+            step[minor] = -1;
         }
         var lastCell;
         console.log('hitscan from (%d,%d) to (%d,%d)', origin[0], origin[1], dest[0], dest[1]);
-        for(var majC=origin[major]; majC*majStep<=dest[major]*majStep; majC+=majStep) {
+        for(pos[major]=origin[major]; pos[major]!=dest[major]; pos[major]+=step[major]) {
             var lastCell = new Array();
-            lastCell[major] = majC;
-            lastCell[minor] = minC;
+            lastCell = [pos[0], pos[1]];
             hitCells.push(lastCell);
             console.log(lastCell/*,this.sectorContents(lastCell)*/);
             if(!(lastCell[0] == origin[0] && lastCell[1] == origin[1]) && this.sectorContents(lastCell) != undefined) {
@@ -240,7 +236,7 @@ function Quadrant(galaxy, pos, size, ships) {
             }
             error -= delta[minor];
             if(error < 0) {
-                minC += minStep;
+                pos[minor] += step[minor];
                 error += delta[major];
             }
         }
