@@ -81,7 +81,7 @@ function Galaxy(size, qSize) {
         return new Quadrant(this, [qx, qy], this.qSize, ships);
     }
     this.unifiedCoordinates = function(sectorPos, quadrantPos) {
-        return [sectorPos[0] + (quadrantPos[0] * this.width), sectorPos[1] + (quadrantPos[1] * this.height)];
+        return [sectorPos[0] + (quadrantPos[0] * this.qSize[0]), sectorPos[1] + (quadrantPos[1] * this.qSize[1])];
     }
     
     //classic names: aaaabccdpprrsssv
