@@ -54,8 +54,8 @@ section {
 .grid td, .grid th {
 	text-align: center;
 	padding: 0em;
-	width: 3em;
-	height: 3em;
+	width: 2em;
+	height: 2em;
 }
 .grid .column {
 	padding: 0em 0.25em;
@@ -77,6 +77,9 @@ section {
 	background: #3ccf8b;
 	color: #000;
 }
+.tabbed {
+	position: relative;
+}
 .tabbed > ol {
 	overflow: hidden;
 }
@@ -93,10 +96,7 @@ section {
 	cursor: default;
 }
 .tabbed > section {
-	display: none;
-}
-.tabbed > section.active {
-	display: block;
+	margin: auto;
 }
 
 .slider, .bargraph {
@@ -295,7 +295,10 @@ td > .slider, td > .bargraph {
 #torpedo-count {
 	text-align: center;
 }
-
+body, html {
+	height: 100%;
+	overflow: hidden;
+}
 #command {
 	float: right;
 	border-left: 0.5em solid #3079f9;
@@ -308,6 +311,7 @@ td > .slider, td > .bargraph {
 	border-right: 0.5em solid #3079f9;
 	margin-right: -0.5em;
 	padding: 0.25em;
+	height: 100%;
 }
 #status {
 	border-bottom-left-radius: 2em;
@@ -331,6 +335,10 @@ td > .slider, td > .bargraph {
 	margin: 0.25em;
 	margin-bottom: 1em;
 	padding-right: 21em;
+	height: 75%;
+}
+#bottom {
+	height: 25%;
 }
 .tabbed > ol {
 	margin-left: 1em;

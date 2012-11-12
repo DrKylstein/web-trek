@@ -91,28 +91,31 @@ POSSIBILITY OF SUCH DAMAGE.
                 <div id="engage" class="button">Engage</div>
             </section>
             <section>
-                <h1>Damage Control</h1>
-                <table id="damage-control">
-                    <tr><th>System</th><th>Time to Repair</th></tr>
-                    <tr><th class="column">Warp Engines</th><td id="engines-damage">0.0</td></tr>
-                    <!--tr><th class="column">Short Range Sensors</th><td id="srs-damage">0.0</td></tr>
-                    <tr><th class="column">Long Range Sensors</th><td id="lrs-damage">0.0</td></tr-->
-                    <tr><th class="column">Phaser Control</th><td id="phasers-damage">0.0</td></tr>
-                    <tr><th class="column">Photon Tubes</th><td id="torpedos-damage">0.0</td></tr>
-                    <tr><th class="column">Damage Control</th><td id="damage-damage">0.0</td></tr>
-                    <tr><th class="column">Shield Control</th><td id="shields-damage">0.0</td></tr>
-                    <!--tr><th class="column">Library Computer</th><td id="library-damage">0.0</td></tr-->
-                    <tr><th class="column">Total</th><td id="total-damage">0.0</td></tr>
+                <h1>Engineering</h1>
+                <table>
+                    <tr>
+                        <th class="column">Energy</th>
+                        <td>
+                            <div data-step=1 data-min=0 data-max=3000 data-value=3000 id="energy" class="bargraph horizontal">
+                                <div class="bar"></div>
+                                <div class="label">3000</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="column">Emergency Repairs</th>
+                        <td><div class="button" id="do-repair">Authorize</div></td>
+                    </tr>
                 </table>
-                <div class="button" id="do-repair">Repair</div>
             </section>
         </div>
         <section class="tabbed" id="astrometrics">
             <ol>
                 <li>Sensor Scan</li>
                 <li>Starchart</li>
+                <li>Systems</li>
             </ol>
-            <section id="sensors">
+            <section id="sensors" class="biggest-tab">
                 <table id="srs" class="grid">
                     <tr><td class="adjacent-summary" id="summary-northwest">000</td><td></td><td class="adjacent-summary" colspan="8" id="summary-north">000</td><td id="summary-northeast" class="adjacent-summary">000</td></tr>
                     <tr><th></th><th></th><th>01</th><th>02</th><th>03</th><th>04</th><th>05</th><th>06</th><th>07</th><th>08</th><!--th>09</th><th>10</th--><tr>
@@ -134,7 +137,6 @@ POSSIBILITY OF SUCH DAMAGE.
             </section>
             <section id="galaxy">
                 <table id="starchart" class="grid">
-                    <tr><th>&nbsp;</th></tr>
                     <tr><th></th><th>I</th><th>II</th><th>III</th><th>IV</th><!--th>V</th--><th>I</th><th>II</th><th>III</th><th>IV</th><!--th>V</th--></tr>
                     <!--tr><th></th><th>01</th><th>02</th><th>03</th><th>04</th><th>05</th><th>06</th><th>07</th><th>08</th><th>09</th><th>10</th></tr-->
                     <tr><th class="column">Antares</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><!--td class="cell">000</td><td class="cell">000</td--><th class="column">Sirius</th></tr>
@@ -147,11 +149,26 @@ POSSIBILITY OF SUCH DAMAGE.
                     <tr><th class="column">Pollux</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><!--td class="cell">000</td><td class="cell">000</td--><th class="column">Spica</th></tr>
                     <!--tr><th class="column">Fomalhaut</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th class="column">Navi</th></tr>
                     <tr><th class="column">Enath</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th class="column">Kastra</th></tr-->
-                    <tr><th>&nbsp;</th></tr>
+                </table>
+            </section>
+            <section id="damage-control">
+                <h1>Damage Control</h1>
+                <table>
+                    <tr><th>System</th><th>Time to Repair</th></tr>
+                    <tr><th class="column">Warp Engines</th><td id="engines-damage">0.0</td></tr>
+                    <!--tr><th class="column">Short Range Sensors</th><td id="srs-damage">0.0</td></tr-->
+                    <tr><th class="column">Long Range Sensors</th><td id="lrs-damage">0.0</td></tr>
+                    <tr><th class="column">Phaser Control</th><td id="phasers-damage">0.0</td></tr>
+                    <tr><th class="column">Photon Tubes</th><td id="torpedos-damage">0.0</td></tr>
+                    <tr><th class="column">Damage Control</th><td id="damage-damage">0.0</td></tr>
+                    <tr><th class="column">Shield Control</th><td id="shields-damage">0.0</td></tr>
+                    <tr><th class="column">Library Computer</th><td id="library-damage">0.0</td></tr>
+                    <tr><th class="column">Total</th><td id="total-damage">0.0</td></tr>
                 </table>
             </section>
         </section>
         </div>
+        <div id="bottom">
         <section id="status">
             <table>
                 <tr><th class="column">Stardate</th><td id="time">0</td></tr>
@@ -164,19 +181,9 @@ POSSIBILITY OF SUCH DAMAGE.
                 <tr><th class="column">Klingons <span class="klingon">&#9660;</span></th><td id="total-klingons">0</td></tr>
                 <tr><th class="column">Starbases <span class="starbase">&#9632;</span></th><td id="total-bases">0</td></tr>
             </table>
-            <table>
-                <tr>
-                    <th class="column">Energy</th>
-                    <td>
-                        <div data-step=1 data-min=0 data-max=3000 data-value=3000 id="energy" class="bargraph horizontal">
-                            <div class="bar"></div>
-                            <div class="label">3000</div>
-                        </div>
-                    </td>
-                </tr>
-            </table>
         </section>
         <h1 id="gndn">2557-1</h1><h1>Starship Operation Status</h1> 
+        </div>
         <section id="win-message" class="message-box">
             <h1><span>Mission Complete</span></h1>
             <p>

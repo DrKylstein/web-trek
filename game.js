@@ -118,6 +118,33 @@ function Quadrant(galaxy, pos, size, ships) {
     this.width = size[0];
     this.height = size[1];
     this.things = ships;
+    this.__defineGetter__('klingons', function getKlingons() {
+        var total = 0;
+        for(var i in this.things) {
+            if(this.things[i].category == 'klingon') {
+                total++;
+            }
+        }
+        return total;
+    });
+    this.__defineGetter__('starbases', function getStarbases() {
+        var total = 0;
+        for(var i in this.things) {
+            if(this.things[i].category == 'starbase') {
+                total++;
+            }
+        }
+        return total;
+    });
+    this.__defineGetter__('stars', function getStars() {
+        var total = 0;
+        for(var i in this.things) {
+            if(this.things[i].category == 'star') {
+                total++;
+            }
+        }
+        return total;
+    });
     this.emptySpots = function emptySpots() {
         var occupied = false;
         var freeCells = new Array();
@@ -224,6 +251,7 @@ function Quadrant(galaxy, pos, size, ships) {
 function Starchart(w,h) {
     this.width = w;
     this.height = h;
+    this.enabled = true;
     this._info = new Array();
     for(var y=0;y<w;++y) {
         this._info.push(new Array())
@@ -231,18 +259,33 @@ function Starchart(w,h) {
             this._info[y].push(undefined);
         }
     }
-    this.update = function update(galaxy, pos) {
-        for(var y=-1;y<=1;++y) {
-            for(var x=-1;x<=1;++x) {
-                if(pos[0] + x < 0 || pos[0] + x >= this.width ||
-                    pos[1] + y < 0 || pos[1] + y >= this.height) {
+    this.update = function update(quadrant, lrs) {
+        if(!this.enabled) {
+            return;
+        }
+        for(var dy=-1;dy<=1;++dy) {
+            for(var dx=-1;dx<=1;++dx) {
+                var x = quadrant.x + dx;
+                var y = quadrant.y + dy;
+                if(x < 0 || x >= this.width ||
+                    y < 0 || y >= this.height) {
                     continue;
                 }
-                this._info[pos[1]+y][pos[0]+x] = galaxy.quadrantInfo(pos[0]+x, pos[1]+y);
+                if(dx == 0 && dy == 0) {
+                    this._info[y][x] = {
+                        'klingons':quadrant.klingons, 
+                        'starbases':quadrant.starbases, 
+                        'stars':quadrant.stars};
+                } else if(lrs != undefined) {
+                    this._info[y][x] = lrs[dy+1][dx+1];
+                }
             }
         }
     }
     this.getQuadrant = function getQuadrant(x,y) {
+        if(!this.enabled) {
+            return undefined;
+        }
         return this._info[y][x];
     }
     this.clear = function clear() {
@@ -268,7 +311,7 @@ function Starship(galaxy) {
     this.shields = 0;
     this.torpedos = _MAX_TORPEDOS;
     this.dead = false;
-    this.damaged = {'engines':0, /*'srs':0, 'lrs':0,*/ 'phasers':0, 'torpedos':0, 'damage':0, 'shields':0/*, 'library':0*/}
+    this.damaged = {'engines':0, /*'srs':0,*/ 'lrs':0, 'phasers':0, 'torpedos':0, 'damage':0, 'shields':0, 'library':0}
     this.docked = false;
     
     this.reset = function reset() {
@@ -279,10 +322,10 @@ function Starship(galaxy) {
         this.torpedos = _MAX_TORPEDOS;
         this.dead = false;
         this.quadrant = this._galaxy.getQuadrant(random.range(this._galaxy.width), random.range(this._galaxy.height), [this]);
-        this.starchart.clear();
-        this.starchart.update(this._galaxy, [this.quadrant.x, this.quadrant.y]);
-        this.docked = false;
         this.fullRepair();
+        this.starchart.clear();
+        this.starchart.update(this.quadrant, this.longRangeSensors());
+        this.docked = false;
     }
         
     this.shieldControl = function shieldControl(newvalue){
@@ -365,7 +408,7 @@ function Starship(galaxy) {
         this.y = dest[1];
         if(this.quadrant.x != qDest[0] || this.quadrant.y != qDest[1]) {
             this.quadrant = this._galaxy.getQuadrant(qDest[0], qDest[1], [this]);
-            this.starchart.update(this._galaxy, [this.quadrant.x, this.quadrant.y]);
+            this.starchart.update(this.quadrant, this.longRangeSensors());
         }
         this.handleDocking();
         var dt = this.travelTime(cost)
@@ -429,6 +472,7 @@ function Starship(galaxy) {
         if(this.shields < 0) {
             this.dead = true;
         }
+        this.starchart.enabled = (this.damaged.library == 0);
         return amount;
     }
     
@@ -445,6 +489,7 @@ function Starship(galaxy) {
                 }
             }
         }
+        this.starchart.enabled = (this.damaged.library == 0);
     }
     
     this.fullRepairTime = function fullRepairTime() {
@@ -462,10 +507,14 @@ function Starship(galaxy) {
         for(var k in keys) {
             this.damaged[keys[k]] = 0;
         }
+        this.starchart.enabled = (this.damaged.library == 0);
         return dt;
     }
     
     this.longRangeSensors = function longRangeSensors() {
+        if(this.damaged.lrs > 0) {
+            return;
+        }
         var longRange = new Array();
         for(var y=-1;y<=1;++y) {
             longRange.push(new Array());
@@ -592,23 +641,33 @@ function ScannerDisplay(widget, player) {
             this._widget.cellHtml(things[i].x, things[i].y, 
                 this._symbolIcons[things[i].category]);
         }
-        lrs = this._player.longRangeSensors();
         function summarize(category, count) {
             if(count) {
                 return '<span class='+category+'>'+count+'</span>';
             }
             return '';
         }
-        for(var dx=-1;dx<=1;++dx) {
-            for(var dy=-1;dy<=1;++dy) {
-                if(lrs[dy+1][dx+1] == undefined) {
-                    this._summaries['('+dx+','+dy+')'].innerHTML = '&nbsp;';
-                } else if(!(dx == 0 && dy == 0)) {
-                    this._summaries['('+dx+','+dy+')'].innerHTML = (
-                        summarize('klingon', lrs[dy+1][dx+1].klingons) +
-                        summarize('starbase', lrs[dy+1][dx+1].starbases) +
-                        summarize('star', lrs[dy+1][dx+1].stars)
-                    );
+        lrs = this._player.longRangeSensors();
+        if(lrs == undefined) {
+            for(var dx=-1;dx<=1;++dx) {
+                for(var dy=-1;dy<=1;++dy) {
+                    if(!(dx == 0 && dy == 0)) {
+                        this._summaries['('+dx+','+dy+')'].innerHTML = '?';
+                    }
+                }
+            }
+        } else{
+            for(var dx=-1;dx<=1;++dx) {
+                for(var dy=-1;dy<=1;++dy) {
+                    if(lrs[dy+1][dx+1] == undefined) {
+                        this._summaries['('+dx+','+dy+')'].innerHTML = '&nbsp;';
+                    } else if(!(dx == 0 && dy == 0)) {
+                        this._summaries['('+dx+','+dy+')'].innerHTML = (
+                            summarize('klingon', lrs[dy+1][dx+1].klingons) +
+                            summarize('starbase', lrs[dy+1][dx+1].starbases) +
+                            summarize('star', lrs[dy+1][dx+1].stars)
+                        );
+                    }
                 }
             }
         }
@@ -720,6 +779,11 @@ function Game(widgets) {
             self._widgets['shields'].disabled = false;
             $('#shields-section').removeClass('offline');
         }
+        if(self.player.damaged['library'] > 0) {
+            $('#starchart').addClass('offline');
+        } else {
+            $('#starchart').removeClass('offline');
+        }
     }
     
     this._updateWarp = function _updateWarp(value) {
@@ -745,8 +809,7 @@ function Game(widgets) {
     }
 
     this._updateCondition = function _updateCondition() {
-        var lrs = self.player.longRangeSensors();
-        if(lrs[1][1].klingons > 0) {
+        if(self.player.quadrant.klingons) {
             $('#condition').html('Red');
             $('body').addClass('red-alert');
             $('#condition').removeClass('green');
