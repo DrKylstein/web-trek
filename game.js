@@ -222,12 +222,10 @@ function Quadrant(galaxy, pos, size, ships) {
             step[minor] = -1;
         }
         var lastCell;
-        console.log('hitscan from (%d,%d) to (%d,%d)', origin[0], origin[1], dest[0], dest[1]);
         for(pos[major]=origin[major]; pos[major]!=dest[major]; pos[major]+=step[major]) {
             var lastCell = new Array();
             lastCell = [pos[0], pos[1]];
             hitCells.push(lastCell);
-            console.log(lastCell/*,this.sectorContents(lastCell)*/);
             if(!(lastCell[0] == origin[0] && lastCell[1] == origin[1]) && this.sectorContents(lastCell) != undefined) {
                 if(hitCells.length > 1) {
                     return [hitCells[hitCells.length-2], lastCell];
@@ -391,7 +389,6 @@ function Starship(galaxy) {
             return 0;
         }
         if(qDest[0] == this.quadrant.x && qDest[1] == this.quadrant.y) {
-            //console.log('intraquadrant travel');
             var hitPos = this.quadrant.hitScan([this.x, this.y], dest)[0];
             if(hitPos) {
                 dest = hitPos;
@@ -1006,7 +1003,6 @@ function Game(widgets) {
                 self.player.shieldControl(self._widgets['shields'].value());
                 break;
         }
-        console.log(dt);
         if(dt > 0) {
             self.time += dt;
         }
