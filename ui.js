@@ -118,12 +118,14 @@ function Tabbed(element) {
         $(this).hide();
     })
     self.changetab = function(index) {
-        $(self.pages[self.currentIndex]).hide();
-        $(self.pages[index]).show();
+        var next = $(self.pages[index]);
+        $(self.pages[self.currentIndex]).fadeOut( function() {
+            next.fadeIn();
+        });
+        //$(self.pages[index]).fadeIn();
         $(self.tabs[self.currentIndex]).removeClass('active');
         $(self.tabs[index]).addClass('active');
         self.currentIndex = index;
-        //$(self.pages[index]).addClass('active');
     };
     $(self.tabs).each(function (index) {
         $(this).click(partial(self.changetab, index));
