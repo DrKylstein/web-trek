@@ -204,15 +204,18 @@ function Slider(element) {
         }
         $(self.elementLabel).html((self._value * self.displayScale).toFixed(self.displayPrecision));
     };
+    self.mouseup = function(event) {
+        $('body').unbind('mousemove', self.mousemove);
+        $('body').unbind('mouseup', self.mouseup);
+        self.onchange(self._value);
+    }
     self.mousedown = function(event) {
         if(self.disabled) {
             return;
         }
         event.preventDefault();
         $('body').mousemove(self.mousemove);
-        $('body').mouseup(function mouseup(event) {
-            $('body').unbind('mousemove', self.mousemove);
-        });
+        $('body').mouseup(self.mouseup);
     };
     self.mousemove = function mousemove(event) {
         event.preventDefault();
@@ -243,7 +246,7 @@ function Slider(element) {
         }
         var newValue = self._sliderPosToValue(newLine);
         self.setValue(newValue);
-        self.onchange(newValue);
+        //self.onchange(newValue);
     };
     $(self.elementRoot).mousedown(self.mousedown);
     self.setValue(parseFloat($(self.elementRoot).attr('data-value')));
