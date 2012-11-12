@@ -318,7 +318,7 @@ function Starship(galaxy) {
         this.quadrant = this._galaxy.getQuadrant(random.range(this._galaxy.width), random.range(this._galaxy.height), [this]);
         this.fullRepair();
         this.starchart.clear();
-        this.starchart.update(this.quadrant, this.longRangeSensors());
+        //this.starchart.update(this.quadrant, this.longRangeSensors());
         this.docked = false;
     }
         
@@ -401,7 +401,7 @@ function Starship(galaxy) {
         this.y = dest[1];
         if(this.quadrant.x != qDest[0] || this.quadrant.y != qDest[1]) {
             this.quadrant = this._galaxy.getQuadrant(qDest[0], qDest[1], [this]);
-            this.starchart.update(this.quadrant, this.longRangeSensors());
+            //this.starchart.update(this.quadrant, this.longRangeSensors());
         }
         this.handleDocking();
         var dt = this.travelTime(cost)
@@ -1006,6 +1006,7 @@ function Game(widgets) {
         if(dt > 0) {
             self.time += dt;
         }
+        self.player.starchart.update(self.player.quadrant, self.player.longRangeSensors());
         self._updateDisplays();
         self._checkDead();
     }
