@@ -424,7 +424,7 @@ function Starship(galaxy) {
             }
             var target = this.quadrant.sectorContents(pos);
             if(target != undefined && target != this) {
-                target.damage(10000);
+                target.torpedoDamage();
                 return target;
             }
         }
@@ -552,10 +552,13 @@ function Klingon(x,y, quadrant) {
             this.shields -= amount;
             if(this.shields <= 0) {
                 this.quadrant.destroy(this);
-                return -1;
             }
-            return amount;
+            return amount + this.shields;
         }
+    }
+    this.torpedoDamage = function torpedoDamage() {
+        this.quadrant.destroy(this);
+        return this.shields;
     }
 }
 function Starbase(x,y, quadrant) {
@@ -566,6 +569,10 @@ function Starbase(x,y, quadrant) {
     this.damage = function(amount) {
         return 0;
     }
+    this.torpedoDamage = function torpedoDamage() {
+        this.quadrant.destroy(this);
+        return 10000;
+    }
 }
 function Star(x,y, quadrant) {
     this.category = 'star';
@@ -573,6 +580,9 @@ function Star(x,y, quadrant) {
     this.y = y;
     this.quadrant = quadrant;
     this.damage = function(amount) {
+        return 0;
+    }
+    this.torpedoDamage = function torpedoDamage() {
         return 0;
     }
 }
