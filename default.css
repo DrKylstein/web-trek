@@ -99,10 +99,13 @@ section {
 	margin: auto;
 }
 
+.slider {
+	cursor: pointer;
+}
+
 .slider, .bargraph {
 	position: relative;
 	overflow: hidden;
-	cursor: pointer;
 	margin: auto;
 	border: 0.1em solid #3079f9;
 }
@@ -347,7 +350,7 @@ body, html {
 	margin-bottom: 1em;
 }
 
-body > h1 {
+#main-header {
 	font-size: 200%;	
 }
 #gndn {
