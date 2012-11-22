@@ -103,7 +103,7 @@ function Galaxy(size, qSize) {
 
     this.quadrantName = function quadrantName(q) {
         var nameIndex = q[1]*2;
-        if(q[0] > this.width/2) {
+        if(q[0] >= this.width/2) {
             ++nameIndex;
         }
         var numeralIndex = q[0] % (this.width/2);
