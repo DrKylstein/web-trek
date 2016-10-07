@@ -352,7 +352,7 @@ function Grid(element) {
     self._marked;
     self.cellClick = function defaultCellClick(x,y){};
     self._handleCellClick = function _handleCellClick(x,y) {
-        event.preventDefault();
+        //event.preventDefault();
         self.cellClick(x,y);
     };
     var x=0,
