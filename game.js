@@ -24,7 +24,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 /*
--fix hitscan!
 -klingons are actually pretty tough when they have the opportunity to shoot.
 */
 function Galaxy(size, qSize) {
@@ -222,11 +221,13 @@ function Quadrant(galaxy, pos, size, ships) {
             step[minor] = -1;
         }
         var lastCell;
-        for(pos[major]=origin[major]; pos[major]!=dest[major]; pos[major]+=step[major]) {
+        for(pos[major]=origin[major]; pos[major]!=dest[major]+step[major]; 
+            pos[major]+=step[major]) {
             var lastCell = new Array();
             lastCell = [pos[0], pos[1]];
             hitCells.push(lastCell);
-            if(!(lastCell[0] == origin[0] && lastCell[1] == origin[1]) && this.sectorContents(lastCell) != undefined) {
+            if(!(lastCell[0] == origin[0] && lastCell[1] == origin[1]) && 
+                this.sectorContents(lastCell) != undefined) {
                 if(hitCells.length > 1) {
                     return [hitCells[hitCells.length-2], lastCell];
                 }
@@ -390,6 +391,7 @@ function Starship(galaxy) {
         }
         if(qDest[0] == this.quadrant.x && qDest[1] == this.quadrant.y) {
             var hitPos = this.quadrant.hitScan([this.x, this.y], dest)[0];
+            console.log(hitPos);
             if(hitPos) {
                 dest = hitPos;
             }
