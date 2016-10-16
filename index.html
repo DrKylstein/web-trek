@@ -39,14 +39,11 @@ POSSIBILITY OF SUCH DAMAGE.
     <body>
         <div id="main">
         <div id="command">
-            <section id="weapons">
-                <h1>Weapons</h1>
-                <!--p class="log" id="tactical-log">
-                    
-                </p-->
+            <section id="shields-section">
+                <h1>Shields</h1>
                 <table>
-                    <tr id="shields-section">
-                        <th class="column">Shields</th>
+                    <tr>
+                        <th class="column">Power</th>
                         <td colspan="2">
                             <div data-step=1 data-min=0 data-max=1500 data-value=0 id="shields" class="slider horizontal">
                                 <div class="handle"></div>
@@ -54,14 +51,26 @@ POSSIBILITY OF SUCH DAMAGE.
                             </div>
                         </td>
                     </tr>
-                    <tr id="torpedo-section">
+                    <tr><th class="column">Damage</th><td id="shields-damage">0.0</td><th class="unit">stardates</th></tr>
+                </table>
+            </section>
+            <section id="torpedo-section">
+                <h1>Torpedos</h1>
+                <table>
+                    <tr>
                         <th class="column">Torpedos</th>
                         <td id="torpedo-count">0</td>
                         <!--td id="torpedo-target">(0,0)</td-->
                         <td><div class="button" id="launch-torpedo">Launch</div></td>
                     </tr>
-                    <tr id="phasers-section">
-                        <th class="column">Phasers</th>
+                    <tr><th class="column">Damage</th><td id="torpedos-damage">0.0</td><th class="unit">stardates</th></tr>
+                </table>
+            </section>
+            <section id="phasers-section">
+                <h1>Phasers</h1>
+                <table>
+                    <tr>
+                        <th class="column">Power</th>
                         <td>
                             <div data-step=1 data-min=1 data-max=1000 data-value=300 id="phasers" class="slider horizontal">
                                 <div class="handle"></div>
@@ -72,26 +81,20 @@ POSSIBILITY OF SUCH DAMAGE.
                             <div class="button" id="fire-phasers">Fire</div>
                         </td>
                     </tr>
+                    <tr><th class="column">Damage</th><td id="phasers-damage">0.0</td><th class="unit">stardates</th></tr>
                 </table>
             </section>
-            <!--section id="docking">
-                <h1>Docking</h1>
-                <table>
-                    <tr><th class="column">Docking Hatch</th><td id="docked">Closed</td>
-                    <tr><th class="column">Emergency Repairs</th><td id="total-damage">0.0</td></tr>
-                </table>
-                <div class="button" id="do-repair">Repair</div>
-            </section-->
-            <section id="helm">
+            <section id="engines-section">
                 <h1><span>Helm</span></h1>
                 <table>
-                    <tr id="engines-section"><th class="column">Maximum Range</th><td id="range">0</td><th class="unit">sectors</th></tr>
+                    <tr><th class="column">Maximum Range</th><td id="range">0</td><th class="unit">sectors</th></tr>
+                    <tr><th class="column">Damage</th><td id="engines-damage">0.0</td><th class="unit">stardates</th></tr>
                     <tr><th class="column">Energy Cost</th><td id="travel-energy"></td><th class="unit">units</th></tr> 
                     <tr><th class="column">ETA</th><td id="eta">0</td><th class="unit">stardates</th></tr> 
                 </table>
                 <div id="engage" class="button">Engage</div>
             </section>
-            <section>
+            <section id="damage-control">
                 <h1>Engineering</h1>
                 <table>
                     <tr>
@@ -103,6 +106,8 @@ POSSIBILITY OF SUCH DAMAGE.
                             </div>
                         </td>
                     </tr>
+                    <tr><th class="column">Damage</th><td id="damage-damage">0.0</td><th class="unit">stardates</th></tr>
+                    <tr><th class="column">Total Damage</th><td id="total-damage">0.0</td><th class="unit">stardates</th></tr>
                     <tr>
                         <th class="column">Emergency Repairs</th>
                         <td><div class="button" id="do-repair">Authorize</div></td>
@@ -114,7 +119,6 @@ POSSIBILITY OF SUCH DAMAGE.
             <ol>
                 <li>Sensor Scan</li>
                 <li>Starchart</li>
-                <li>Repairs</li>
             </ol>
             <section id="sensors" class="biggest-tab">
                 <table id="srs" class="grid">
@@ -135,6 +139,9 @@ POSSIBILITY OF SUCH DAMAGE.
                     <tr><th>10</th><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td><td class="cell"></td></tr-->
                     <tr><td class="adjacent-summary" id="summary-southwest">000</td><td></td><td class="adjacent-summary" colspan="8" id="summary-south">000</td><td class="adjacent-summary" id="summary-southeast">000</td></tr>
                 </table>
+                <table>
+                    <tr><th class="column">Damage</th><td id="lrs-damage">0.0</td><th class="unit">stardates</th></tr>
+                </table>
             </section>
             <section id="galaxy">
                 <table id="starchart" class="grid">
@@ -151,19 +158,8 @@ POSSIBILITY OF SUCH DAMAGE.
                     <!--tr><th class="column">Fomalhaut</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th class="column">Navi</th></tr>
                     <tr><th class="column">Enath</th><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><td class="cell">000</td><th class="column">Kastra</th></tr-->
                 </table>
-            </section>
-            <section id="damage-control">
                 <table>
-                    <tr><th>System</th><th>Time to Repair</th></tr>
-                    <tr><th class="column">Warp Engines</th><td id="engines-damage">0.0</td></tr>
-                    <!--tr><th class="column">Short Range Sensors</th><td id="srs-damage">0.0</td></tr-->
-                    <tr><th class="column">Long Range Sensors</th><td id="lrs-damage">0.0</td></tr>
-                    <tr><th class="column">Phasers</th><td id="phasers-damage">0.0</td></tr>
-                    <tr><th class="column">Torpedo Tubes</th><td id="torpedos-damage">0.0</td></tr>
-                    <tr><th class="column">Repair Center</th><td id="damage-damage">0.0</td></tr>
-                    <tr><th class="column">Shield Control</th><td id="shields-damage">0.0</td></tr>
-                    <tr><th class="column">Galactic Databse</th><td id="library-damage">0.0</td></tr>
-                    <tr><th class="column">Total</th><td id="total-damage">0.0</td></tr>
+                    <tr><th class="column">Damage</th><td id="library-damage">0.0</td><th class="unit">stardates</th></tr>
                 </table>
             </section>
         </section>
